@@ -1,11 +1,12 @@
 import _ from 'lodash';
+import franc from 'franc';
 
 let Speech = ((window) => {
 	
 	let CONF = {
-		'lang' : 'en-GB',
+		//'lang' : 'en-GB', // if no language specified, automatic detection will be done
 		'volume': 1,
-		'rate': 0.9,
+		'rate': 1,
 		'pitch': 1
 	};
 
@@ -30,7 +31,6 @@ let Speech = ((window) => {
 	}
 
 	let _checkBrowserSupport = () => {
-		console.log("check browser");
 		return !!window.speechSynthesis;
 	}
 	
@@ -48,7 +48,6 @@ let Speech = ((window) => {
 
 	let _speak = (msg) => {
 		if(!msg) return;
-		console.log("speak", msg);
 		let utterance = new SpeechSynthesisUtterance();
 		//utterance.voice = voices[10]; // Note: some voices don't support altering params
 		//utterance.voiceURI = 'native';
@@ -56,11 +55,23 @@ let Speech = ((window) => {
 		utterance.rate = CONF.rate; // 0.1 to 10
 		utterance.pitch = CONF.pitch; //0 to 2
 		utterance.text = msg;
-		utterance.lang = CONF.lang;
+		var lang = (() => {
+			if(CONF.lang) return CONF.lang;
+			var lang = franc(msg, {'whitelist' : ['eng', 'fra', 'deu']});
+			switch(lang) {
+				case 'eng': return 'en-GB';
+				case 'fra': return 'fr-FR';
+				case 'deu': return 'de-DE';
+				default: return 'en-GB';
+			}
+			console.log('detected', lang);
+		})();
+		utterance.lang = lang;
 		//
 		utterance.onerror = function (e) {
         	console.log("an error occured", e);
     	};
+    	window.speechSynthesis.cancel();
 		window.speechSynthesis.speak(utterance);
 	}
 
