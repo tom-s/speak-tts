@@ -14,8 +14,8 @@ let Speech = ((window) => {
 
 	let _init = (conf) => {
 		// Check browser support
-		if(!_checkBrowserSupport()) {
-			console.log("browser not supported");
+		if(!_browserSupport()) {
+			alert('browser do not support speech synthesis ! try chrome instead');
 			return;
 		}
 
@@ -23,15 +23,28 @@ let Speech = ((window) => {
 		CONF =_.merge(CONF, conf);
 
 		// Start listening to events
-		window.onmouseup = (e) => {
-			let text = _getSelectedText();
-			_speak(text);
+		if(_touchSupport()) {
+			window.ontouchend = (e) => {
+				let text = _getSelectedText();
+				_speak(text);
+			}
+		} else {
+			window.onmouseup = (e) => {
+				let text = _getSelectedText();
+				_speak(text);
+			}
 		}
+		
 		
 	}
 
-	let _checkBrowserSupport = () => {
-		return !!window.speechSynthesis;
+	let _browserSupport = () => {
+		return 'speechSynthesis' in window;
+	}
+
+	let _touchSupport = () => {
+		return 'ontouchstart' in window        // works on most browsers 
+      || navigator.maxTouchPoints;       // works on IE10/11 and Surface
 	}
 	
 	let _getSelectedText = () => {
