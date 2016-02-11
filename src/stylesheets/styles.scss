@@ -1,0 +1,16 @@
+@import 'mixins';
+@import 'common';
+
+/* Import specific stylessheets */
+@import 'fonts';
+@import 'home';
+@import 'modal';
+
+/* Vendors */
+@import 'vendors/ratchet';
+/* @import 'vendors/ratchet-theme-android'; */
+
+/* Generic style */
+.html, body {
+  background-color: #FFFFFF;
+}
