@@ -1,1 +1,3 @@
-console.log("hourra");
+import Speech from './utils/speech.js';
+
+Speech.init();
