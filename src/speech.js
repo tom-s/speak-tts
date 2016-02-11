@@ -64,7 +64,6 @@ let Speech = ((window) => {
 				case 'deu': return 'de-DE';
 				default: return 'en-GB';
 			}
-			console.log('detected', lang);
 		})();
 		utterance.lang = lang;
 		//

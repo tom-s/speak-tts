@@ -8,7 +8,7 @@ var config = {
         demo: [ path.resolve(__dirname, 'demo/demo.js') ],
     },
     output: {
-        path: path.resolve(__dirname, 'demo/build'),
+        path: path.resolve(__dirname, 'demo/dist'),
         filename: '[name].bundle.js'
     },
     resolve: {
@@ -19,7 +19,7 @@ var config = {
             {
                 test: /\.jsx?$/,
                 exclude: /node_modules/,
-                loaders: ["babel-loader"]
+                loader: 'babel-loader?stage=1&optional=runtime'
             },
             {
                 test: /\.scss$/,
