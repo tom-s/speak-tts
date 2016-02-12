@@ -17,10 +17,26 @@ let Speech = ((window) => {
 	let selectedRange = null;
 	let touchSelectedText = null;
 
+	// For polyfill
+	let audio = null;
+
 	let _init = (conf) => {
-		// Check browser support
+		// Polyfill
 		if(!_browserSupport()) {
-			return;
+			window.speechSynthesis = {
+		        speak: (utterance) => {
+		            let url = 'http://translate.google.com/translate_tts?&q=' + encodeURIComponent(utterance.text) + '&tl=' + utterance.lang;
+		            audio = new Audio(url);
+		            audio.volume = utterance.volume;
+		            audio.play();
+		            audio.addEventListener('ended', utterance.onend);
+		            audio.addEventListener('play', utterance.onstart);
+		        },
+
+		        cancel: () => {
+		        	if(audio) audio.stop();
+		        }
+		    };
 		}
 
 		// Import conf
@@ -51,12 +67,28 @@ let Speech = ((window) => {
 	}
 
 	let _browserSupport = () => {
-		return 'speechSynthesis' in window;
+		return 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
 	}
 
 	let _touchSupport = () => {
 		return 'ontouchstart' in window        // works on most browsers 
       || navigator.maxTouchPoints;       // works on IE10/11 and Surface
+	}
+
+	let _getSpeechUtterance = (lang) => {
+		if(!_browserSupport()) {
+			window.SpeechSynthesisUtterance = function (text) {
+				return {
+					lang: lang,
+					volume: 1.0,
+					onend: function () {},
+					onstart: function () {},
+					text: text
+				};
+			};
+		}
+		
+		return new SpeechSynthesisUtterance();
 	}
 	
 	let _captureTouchSelectedText = ()=> {
@@ -77,13 +109,6 @@ let Speech = ((window) => {
 
 	let _speak = (msg) => {
 		if(!msg) return;
-		let utterance = new SpeechSynthesisUtterance();
-		//utterance.voice = voices[10]; // Note: some voices don't support altering params
-		//utterance.voiceURI = 'native';
-		utterance.volume = CONF.volume; // 0 to 1
-		utterance.rate = CONF.rate; // 0.1 to 10
-		utterance.pitch = CONF.pitch; //0 to 2
-		utterance.text = msg;
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
 			var lang = franc(msg, {'whitelist' : ['eng', 'fra', 'deu']});
@@ -94,10 +119,19 @@ let Speech = ((window) => {
 				default: return 'en-GB';
 			}
 		})();
+
+		let utterance = _getSpeechUtterance(lang);
+		//utterance.voice = voices[10]; // Note: some voices don't support altering params
+		//utterance.voiceURI = 'native';
+		utterance.volume = CONF.volume; // 0 to 1
+		utterance.rate = CONF.rate; // 0.1 to 10
+		utterance.pitch = CONF.pitch; //0 to 2
+		utterance.text = msg;
+		
 		utterance.lang = lang;
 		//
 		utterance.onerror = function (e) {
-        	console.log("an error occured", e);
+        	alert("an error occured", e);
     	};
     	window.speechSynthesis.cancel();
 		window.speechSynthesis.speak(utterance);
