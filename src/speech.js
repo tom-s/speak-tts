@@ -11,6 +11,11 @@ let Speech = ((window) => {
 	};
 
 	//let voices = window.speechSynthesis.getVoices();
+	
+	// For touch devices
+	let timer = null;
+	let selectedRange = null;
+	let touchSelectedText = null;
 
 	let _init = (conf) => {
 		// Check browser support
@@ -24,9 +29,17 @@ let Speech = ((window) => {
 
 		// Start listening to events
 		if(_touchSupport()) {
+			timer = setInterval(_captureTouchSelectedText, 150);
+			window.ontouchstart = (e) => {
+				alert("touch start");
+				if (touchSelectedText) {
+            		_speak(touchSelectedText);
+            		clearInterval(timer);
+        		}
+			}
+
 			window.ontouchend = (e) => {
-				let text = _getSelectedText();
-				_speak(text);
+				alert('touch end');
 			}
 		} else {
 			window.onmouseup = (e) => {
@@ -47,6 +60,10 @@ let Speech = ((window) => {
       || navigator.maxTouchPoints;       // works on IE10/11 and Surface
 	}
 	
+	let _captureTouchSelectedText = ()=> {
+		touchSelectedText = _getSelectedText();
+	}
+
 	let _getSelectedText = () => {
 		let txt = '';
 	    if (window.getSelection) {
