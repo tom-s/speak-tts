@@ -1,6 +1,6 @@
 {
   "name": "select-and-speak",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Select and speak",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,8 @@
     "speak",
     "select",
     "text",
-    "text selection"
+    "text selection",
+    "tts"
   ],
   "license": "ISC",
   "devDependencies": {
