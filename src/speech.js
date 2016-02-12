@@ -29,17 +29,17 @@ let Speech = ((window) => {
 
 		// Start listening to events
 		if(_touchSupport()) {
-			timer = setInterval(_captureTouchSelectedText, 150);
+			
 			window.ontouchstart = (e) => {
-				//alert("touch start");
+				timer = setInterval(_captureTouchSelectedText, 150);
+			}
+
+			window.ontouchend = (e) => {
+				alert(touchSelectedText);
 				if (touchSelectedText) {
             		_speak(touchSelectedText);
             		clearInterval(timer);
         		}
-			}
-
-			window.ontouchend = (e) => {
-				alert('touch end');
 			}
 		} else {
 			window.onmouseup = (e) => {
