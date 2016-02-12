@@ -31,13 +31,14 @@ let Speech = ((window) => {
 		if(_touchSupport()) {
 			
 			window.ontouchstart = (e) => {
+				touchSelectedText = null;
 				timer = setInterval(_captureTouchSelectedText, 150);
 			}
 
 			window.ontouchend = (e) => {
-				alert(touchSelectedText);
 				if (touchSelectedText) {
             		_speak(touchSelectedText);
+            		alert('speak ' + touchSelectedText);
             		clearInterval(timer);
         		}
 			}
