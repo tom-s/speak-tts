@@ -31,7 +31,7 @@ let Speech = ((window) => {
 		if(_touchSupport()) {
 			timer = setInterval(_captureTouchSelectedText, 150);
 			window.ontouchstart = (e) => {
-				alert("touch start");
+				//alert("touch start");
 				if (touchSelectedText) {
             		_speak(touchSelectedText);
             		clearInterval(timer);
