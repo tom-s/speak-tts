@@ -20,7 +20,6 @@ let Speech = ((window) => {
 	let _init = (conf) => {
 		// Check browser support
 		if(!_browserSupport()) {
-			alert('browser do not support speech synthesis ! try chrome instead');
 			return;
 		}
 
@@ -29,7 +28,6 @@ let Speech = ((window) => {
 
 		// Start listening to events
 		if(_touchSupport()) {
-			
 			window.ontouchstart = (e) => {
 				touchSelectedText = null;
 				timer = setInterval(_captureTouchSelectedText, 150);
@@ -107,7 +105,7 @@ let Speech = ((window) => {
 
 	return {
 		init: _init,
-		//speak: _speak
+		browserSupport: _browserSupport
 	}
 })(window);
 
