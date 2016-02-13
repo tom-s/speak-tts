@@ -12,11 +12,6 @@ let Speech = ((window) => {
 
 	//let voices = window.speechSynthesis.getVoices();
 	
-	// For touch devices
-	let timer = null;
-	let selectedRange = null;
-	let touchSelectedText = null;
-
 	// For polyfill
 	let audio = null;
 
@@ -44,18 +39,10 @@ let Speech = ((window) => {
 
 		// Start listening to events
 		if(_touchSupport()) {
-			window.ontouchstart = (e) => {
-				touchSelectedText = null;
-				timer = setInterval(_captureTouchSelectedText, 150);
-			}
-
-			window.ontouchend = (e) => {
-				if (touchSelectedText) {
-            		_speak(touchSelectedText);
-            		alert('speak ' + touchSelectedText);
-            		clearInterval(timer);
-        		}
-			}
+			window.document.onselectionchange = _.debounce((e) => {
+				let text = _getSelectedText();
+				_speak(text);
+			}, 1000);
 		} else {
 			window.onmouseup = (e) => {
 				let text = _getSelectedText();
@@ -63,9 +50,7 @@ let Speech = ((window) => {
 			}
 		}
 
-		window.onselectionchange = (e) => {
-			alert("selectionc changed !");
-		}
+		
 		
 		
 	}
