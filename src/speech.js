@@ -62,6 +62,10 @@ let Speech = ((window) => {
 				_speak(text);
 			}
 		}
+
+		window.onselectionchange = (e) => {
+			alert("selectionc changed !");
+		}
 		
 		
 	}
