@@ -41,6 +41,7 @@ let Speech = ((window) => {
 		if(_touchSupport()) {
 			window.document.onselectionchange = _.debounce((e) => {
 				let text = _getSelectedText();
+				alert("speak " + test);
 				_speak(text);
 			}, 1000);
 		} else {
