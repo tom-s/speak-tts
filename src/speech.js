@@ -41,7 +41,6 @@ let Speech = ((window) => {
 		if(_touchSupport()) {
 			window.document.onselectionchange = _.debounce((e) => {
 				let text = _getSelectedText();
-				alert("speak " + test);
 				_speak(text);
 			}, 1000);
 		} else {
@@ -50,19 +49,14 @@ let Speech = ((window) => {
 				_speak(text);
 			}
 		}
-
-		
-		
-		
 	}
 
 	let _browserSupport = () => {
-		return 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+		return ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
 	}
 
 	let _touchSupport = () => {
-		return 'ontouchstart' in window        // works on most browsers 
-      || navigator.maxTouchPoints;       // works on IE10/11 and Surface
+		return ('ontouchstart' in window || navigator.maxTouchPoints);       // works on IE10/11 and Surface
 	}
 
 	let _getSpeechUtterance = (lang) => {
