@@ -128,8 +128,8 @@ let Speech = ((window) => {
 		if(!msg || msg === '.') return;
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
-			var lang = franc(msg, {'whitelist' : ['eng', 'fra', 'deu']});
-			switch(lang) {
+			var flang = franc(msg, {'whitelist' : ['eng', 'fra', 'deu']});
+			switch(flang) {
 				case 'eng': return 'en-GB';
 				case 'fra': return 'fr-FR';
 				case 'deu': return 'de-DE';
@@ -144,6 +144,7 @@ let Speech = ((window) => {
 		let sentences = window.speechSynthesis.splitSentences(msg);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
+			alert("look for voice with  language", lang);
 			let voices = _.filter(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang === lang;
 			});
