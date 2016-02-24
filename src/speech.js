@@ -73,10 +73,9 @@ let Speech = ((window) => {
 		if(_touchSupport()) {
 			// Append button
 			let button =_addTouchButton();
-			button.addEventListener('touchstart', (e) => {
+			button.addEventListener('click', (e) => {
 				let text = _getSelectedText();
 				_speak(text);
-				e.preventDefault();
 			});
 		} else {
 			window.addEventListener('mouseup', (e) => {
