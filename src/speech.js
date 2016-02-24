@@ -11,8 +11,6 @@ let Speech = ((window) => {
 		'pitch': 1
 	};
 
-	//let voices = window.speechSynthesis.getVoices();
-	
 	// For polyfill
 	let audio = null;
 
@@ -144,9 +142,9 @@ let Speech = ((window) => {
 			let voices = _.filter(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang === lang;
 			});
-			utterance.volume = CONF.volume; // 0 to 1
-			utterance.rate = CONF.rate; // 0.1 to 10
-			utterance.pitch = CONF.pitch; //0 to 2
+			utterance.volume = parseFloat(CONF.volume); // 0 to 1
+			utterance.rate = parseFloat(CONF.rate); // 0.1 to 10
+			utterance.pitch = parseFloat(CONF.pitch); //0 to 2
 			utterance.text = sentence;
 
 			if(voices.length > 0) {
