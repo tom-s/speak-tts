@@ -65,21 +65,25 @@ let Speech = ((window) => {
 		if(_touchSupport()) {
 			// Append button
 			let button =_addTouchButton();
-			button.onclick = (e) => {
+			button.addEventListener('touchstart', (e) => {
+				alert('mouse up');
 				let text = _getSelectedText();
+				alert('text');
+
 				_speak(text);
-			}
+			});
 		} else {
-			window.onmouseup = (e) => {
+			window.addEventListener('mouseup', (e) => {
 				let text = _getSelectedText();
 				_speak(text);
-			}
+			});
 		}
 	}
 
 	function _addTouchButton() {
 		let button = window.document.createElement('button');
 		button.innerHTML = "Select some text and click here";
+		button.style.height = '50px';
 		window.document.body.appendChild(button);
 		return button;
 	}
