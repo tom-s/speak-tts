@@ -142,7 +142,6 @@ let Speech = ((window) => {
 		let sentences = window.speechSynthesis.splitSentences(msg);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
-			alert("look for voice with  language" + lang);
 			let voices = _.filter(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang === lang;
 			});
@@ -150,19 +149,16 @@ let Speech = ((window) => {
 			utterance.rate = CONF.rate; // 0.1 to 10
 			utterance.pitch = CONF.pitch; //0 to 2
 			utterance.text = sentence;
-			//utterance.lang = lang;
 
 			if(voices.length > 0) {
-				alert("picked voice" + _.first(voices).name);
 				utterance.voice = _.first(voices);
 			}
 
-			alert('say ' + sentence);
-			/*
 			utterance.onerror = (e) => {
+				alert('error');
 	    	};
 	    	utterance.onend = (e) => {
-	    	};*/
+	    	};
     	
 			window.speechSynthesis.speak(utterance);
 		});
