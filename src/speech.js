@@ -62,10 +62,14 @@ let Speech = ((window) => {
 				return _.chain(sentences).map(_.trim).compact().value();
 			}
 
+			alert("added custom method");
+
 			// wait on voices to be loaded before fetching list
 			window.speechSynthesis.addEventListener('voiceschanged', () => {
 			   _addVoicesList();
 			});
+
+			alert("added listener");
 		}
 
 		// Start listening to events
