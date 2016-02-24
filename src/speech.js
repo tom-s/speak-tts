@@ -17,12 +17,13 @@ let Speech = ((window) => {
 	let audio = null;
 
 	function _init(conf) {
-
+		alert('_init');
 		// Import conf
-		CONF =_.merge(CONF, conf);
+		if(conf) CONF =_.merge(CONF, conf);
 
 		// Polyfill
 		if(!_browserSupport()) {
+			alert("no support");
 			window.speechSynthesis = {
 		        speak(utterance) {
 		            let url = 'http://translate.google.com/translate_tts?&q=' + encodeURIComponent(utterance.text) + '&tl=' + utterance.lang;
@@ -55,6 +56,7 @@ let Speech = ((window) => {
 				};
 			};
 		} else {
+			alert('support');
 			window.speechSynthesis.splitSentences = function(text) {
 				let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
 				return _.chain(sentences).map(_.trim).compact().value();
@@ -68,6 +70,7 @@ let Speech = ((window) => {
 
 		// Start listening to events
 		if(_touchSupport()) {
+			alert("touch support");
 			// Append button
 			let button =_addTouchButton();
 			button.addEventListener('touchstart', (e) => {
@@ -76,6 +79,7 @@ let Speech = ((window) => {
 				_speak(text);
 			});
 		} else {
+			alert('no touch support');
 			window.addEventListener('mouseup', (e) => {
 				let text = _getSelectedText();
 				_speak(text);
