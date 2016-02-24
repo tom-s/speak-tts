@@ -150,7 +150,7 @@ let Speech = ((window) => {
 			utterance.rate = CONF.rate; // 0.1 to 10
 			utterance.pitch = CONF.pitch; //0 to 2
 			utterance.text = sentence;
-			utterance.lang = lang;
+			//utterance.lang = lang;
 
 			if(voices.length > 0) {
 				alert("picked voice" + _.first(voices).name);
