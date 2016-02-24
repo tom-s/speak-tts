@@ -66,8 +66,8 @@ let Speech = ((window) => {
 			// Append button
 			let button =_addTouchButton();
 			button.addEventListener('touchstart', (e) => {
-				e.preventDefault();
 				let text = _getSelectedText();
+				alert('touch ', text);
 				_speak(text);
 			});
 		} else {
