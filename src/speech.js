@@ -144,7 +144,7 @@ let Speech = ((window) => {
 		let sentences = window.speechSynthesis.splitSentences(msg);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
-			alert("look for voice with  language", lang);
+			alert("look for voice with  language" + lang);
 			let voices = _.filter(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang === lang;
 			});
@@ -156,7 +156,7 @@ let Speech = ((window) => {
 			utterance.lang = lang;
 
 			if(voices.length > 0) {
-				alert("picked voice", _.first(voices).name);
+				alert("picked voice" + _.first(voices).name);
 				utterance.voice = _.first(voices);
 			}
 			/*
