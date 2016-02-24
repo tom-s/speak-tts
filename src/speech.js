@@ -75,12 +75,10 @@ let Speech = ((window) => {
 			let button =_addTouchButton();
 			button.addEventListener('touchstart', (e) => {
 				let text = _getSelectedText();
-				alert('speak ', text);
 				_speak(text);
 				e.preventDefault();
 			});
 		} else {
-			alert('no touch support');
 			window.addEventListener('mouseup', (e) => {
 				let text = _getSelectedText();
 				_speak(text);
@@ -148,7 +146,6 @@ let Speech = ((window) => {
 			let voices = _.filter(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang === lang;
 			});
-			//utterance.voice = voices[10]; // Note: some voices don't support altering params
 			utterance.volume = CONF.volume; // 0 to 1
 			utterance.rate = CONF.rate; // 0.1 to 10
 			utterance.pitch = CONF.pitch; //0 to 2
@@ -159,6 +156,8 @@ let Speech = ((window) => {
 				alert("picked voice" + _.first(voices).name);
 				utterance.voice = _.first(voices);
 			}
+
+			alert('say ' + sentence);
 			/*
 			utterance.onerror = (e) => {
 	    	};
