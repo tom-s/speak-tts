@@ -65,12 +65,11 @@ let Speech = ((window) => {
 			alert("added custom method");
 
 			// wait on voices to be loaded before fetching list
-			if ('onvoiceschanged' in speechSynthesis) {
-				alert("added listener");
-
+			if ('onvoiceschanged' in window.speechSynthesis) {
+				alert("add listener");
     			speechSynthesis.onvoiceschanged = _addVoicesList;
 			} else {
-				alert("add vpoces");
+				alert("add voices");
 				_addVoicesList();
 			}
 
