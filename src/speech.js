@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import franc from 'franc';
+import rangy from 'rangy/lib/rangy-textrange';
 
 let Speech = ((window) => {
 	
@@ -15,34 +16,57 @@ let Speech = ((window) => {
 	// For polyfill
 	let audio = null;
 
-	let _init = (conf) => {
-		// Polyfill
-		if(!_browserSupport()) {
-			window.speechSynthesis = {
-		        speak: (utterance) => {
-		            let url = 'http://translate.google.com/translate_tts?&q=' + encodeURIComponent(utterance.text) + '&tl=' + utterance.lang;
-		            audio = new Audio(url);
-		            audio.volume = utterance.volume;
-		            audio.play();
-		            audio.addEventListener('ended', utterance.onend);
-		            audio.addEventListener('play', utterance.onstart);
-		        },
-
-		        cancel: () => {
-		        	if(audio) audio.stop();
-		        }
-		    };
-		}
+	function _init(conf) {
 
 		// Import conf
 		CONF =_.merge(CONF, conf);
 
+		// Polyfill
+		if(!_browserSupport()) {
+			window.speechSynthesis = {
+		        speak(utterance) {
+		            let url = 'http://translate.google.com/translate_tts?&q=' + encodeURIComponent(utterance.text) + '&tl=' + utterance.lang;
+		            audio = new Audio(url);
+		            audio.volume = utterance.volume;
+		            audio.play();
+		            audio.addEventListener('ended', () => {
+		            	audio = null;
+
+		            });
+		            audio.addEventListener('play', utterance.onstart);
+		        },
+
+		        splitSentences(text) {
+		        	return [text]; // no need to splut
+		        },
+
+		        cancel() {
+		        	if(audio) audio.stop();
+		        }
+		    };
+
+		    window.SpeechSynthesisUtterance = function (text) {
+				return {
+					lang: 'fr-FR',
+					volume: CONF.volume,
+					onend: function () {},
+		            onstart: function () {},
+					text: text
+				};
+			};
+		} else {
+			window.speechSynthesis.splitSentences = function(text) {
+				let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
+				return _.chain(sentences).map(_.trim).compact().value();
+			}
+		}
+
 		// Start listening to events
 		if(_touchSupport()) {
-			window.document.onselectionchange = _.debounce((e) => {
+			window.ontouchend = (e) => {
 				let text = _getSelectedText();
 				_speak(text);
-			}, 1000);
+			}
 		} else {
 			window.onmouseup = (e) => {
 				let text = _getSelectedText();
@@ -51,47 +75,25 @@ let Speech = ((window) => {
 		}
 	}
 
-	let _browserSupport = () => {
+	
+	function _browserSupport() {
 		return ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
 	}
 
-	let _touchSupport = () => {
+	function _touchSupport() {
 		return ('ontouchstart' in window || navigator.maxTouchPoints);       // works on IE10/11 and Surface
 	}
 
-	let _getSpeechUtterance = (lang) => {
-		if(!_browserSupport()) {
-			window.SpeechSynthesisUtterance = function (text) {
-				return {
-					lang: lang,
-					volume: 1.0,
-					onend: function () {},
-					onstart: function () {},
-					text: text
-				};
-			};
-		}
-		
-		return new SpeechSynthesisUtterance();
-	}
-	
-	let _captureTouchSelectedText = ()=> {
-		touchSelectedText = _getSelectedText();
+	function _getSelectedText() {
+		rangy.getSelection().expand('word'); // expand selection to word so that we don't have half words
+	  	return rangy.getSelection().toString();
 	}
 
-	let _getSelectedText = () => {
-		let txt = '';
-	    if (window.getSelection) {
-	        txt = window.getSelection().toString();
-	    } else if (window.document.getSelection) {
-	        txt = window.document.getSelection().toString();
-	    } else if (window.document.selection) {
-	        txt = window.document.selection.createRange().text;
-	    }
-	    return txt;  
+	function _stop() {
+		window.speechSynthesis.cancel();
 	}
 
-	let _speak = (msg) => {
+	function _speak(msg) {
 		if(!msg) return;
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
@@ -104,21 +106,28 @@ let Speech = ((window) => {
 			}
 		})();
 
-		let utterance = _getSpeechUtterance(lang);
-		//utterance.voice = voices[10]; // Note: some voices don't support altering params
-		//utterance.voiceURI = 'native';
-		utterance.volume = CONF.volume; // 0 to 1
-		utterance.rate = CONF.rate; // 0.1 to 10
-		utterance.pitch = CONF.pitch; //0 to 2
-		utterance.text = msg;
-		
-		utterance.lang = lang;
-		//
-		utterance.onerror = function (e) {
-        	alert("an error occured", e);
-    	};
-    	window.speechSynthesis.cancel();
-		window.speechSynthesis.speak(utterance);
+		// Stop current speech
+		_stop();
+
+		// Split into sentances (for better result and bug with some versions of chrome)
+		let sentences = window.speechSynthesis.splitSentences(msg);
+		_.forEach(sentences, (sentence) => {
+			let utterance = new window.SpeechSynthesisUtterance();
+			//utterance.voice = voices[10]; // Note: some voices don't support altering params
+			utterance.volume = CONF.volume; // 0 to 1
+			utterance.rate = CONF.rate; // 0.1 to 10
+			utterance.pitch = CONF.pitch; //0 to 2
+			utterance.text = sentence;
+			utterance.lang = lang;
+
+			/*
+			utterance.onerror = (e) => {
+	    	};
+	    	utterance.onend = (e) => {
+	    	};*/
+    	
+			window.speechSynthesis.speak(utterance);
+		});
 	}
 
 	return {
