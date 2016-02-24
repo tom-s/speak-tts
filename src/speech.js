@@ -68,7 +68,7 @@ let Speech = ((window) => {
 			button.addEventListener('touchstart', (e) => {
 				alert('mouse up');
 				let text = _getSelectedText();
-				alert('text');
+				alert(text);
 
 				_speak(text);
 			});
