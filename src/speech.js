@@ -59,6 +59,11 @@ let Speech = ((window) => {
 				let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
 				return _.chain(sentences).map(_.trim).compact().value();
 			}
+
+			// wait on voices to be loaded before fetching list
+			window.speechSynthesis.addEventListener('voiceschanged', () => {
+			   _addVoicesList();
+			});
 		}
 
 		// Start listening to events
@@ -76,14 +81,7 @@ let Speech = ((window) => {
 				_speak(text);
 				e.preventDefault();
 			});
-		}
-
-		// wait on voices to be loaded before fetching list
-		window.speechSynthesis.addEventListener('voiceschanged', () => {
-		   _addVoicesList();
-		});
-
-		
+		}		
 	}
 
 	function _addVoicesList() {
@@ -150,8 +148,11 @@ let Speech = ((window) => {
 			utterance.pitch = CONF.pitch; //0 to 2
 			utterance.text = sentence;
 			utterance.lang = lang;
-			utterance.voice = _.first(voices);
-			alert("picked voice", _.first(voices));
+
+			if(voices.length > 0) {
+				alert("picked voice", _.first(voices));
+				utterance.voice = _.first(voices);
+			}
 			/*
 			utterance.onerror = (e) => {
 	    	};
