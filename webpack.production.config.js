@@ -19,7 +19,10 @@ var config = {
             {
                 test: /\.jsx?$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader?stage=1&optional=runtime'
+                loader: "babel",
+                query: {
+                    presets: ['es2015', 'stage-2']
+                }
             },
             {
                 test: /\.scss$/,
