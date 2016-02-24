@@ -63,7 +63,9 @@ let Speech = ((window) => {
 
 		// Start listening to events
 		if(_touchSupport()) {
-			window.ontouchend = (e) => {
+			// Append button
+			let button =_addTouchButton();
+			button.onclick = (e) => {
 				let text = _getSelectedText();
 				_speak(text);
 			}
@@ -75,6 +77,12 @@ let Speech = ((window) => {
 		}
 	}
 
+	function _addTouchButton() {
+		let button = window.document.createElement('button');
+		button.innerHTML = "Select some text and click here";
+		window.document.body.appendChild(button);
+		return button;
+	}
 	
 	function _browserSupport() {
 		return ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
