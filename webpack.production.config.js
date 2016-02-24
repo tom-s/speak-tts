@@ -21,16 +21,9 @@ var config = {
                 exclude: /node_modules/,
                 loader: "babel",
                 query: {
-                    presets: ['es2015', 'stage-2']
+                  plugins: ['transform-runtime'],
+                  presets: ['es2015', 'stage-0']
                 }
-            },
-            {
-                test: /\.scss$/,
-                loader: "style!css!sass?outputStyle=expanded=includePaths[]=" + node_modules + "/bootstrap-sass/assets/stylesheets/"
-            },
-            {
-                test: /\.(png|jpg|jpeg|gif|woff|woff2|eot|ttf|svg)$/,
-                loader: 'url-loader?limit=100000'
             },
             {
                 include: /\.json$/, loaders: ["json-loader"],
