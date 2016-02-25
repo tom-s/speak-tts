@@ -153,12 +153,10 @@ let Speech = ((window) => {
     			//speechSynthesis.onvoiceschanged = _addVoicesList;
 			} else {
 				var iosVersion = _iOSversion();
-				if(iOSversion) {
-					_initIOS();
+				if(iosVersion) {
+					_initIOS(iosVersion);
 				}
-				
 			}
-
 		}
 
 		// Start listening to events
