@@ -103,6 +103,15 @@ let Speech = ((window) => {
 			if ('onvoiceschanged' in window.speechSynthesis) {
     			speechSynthesis.onvoiceschanged = _addVoicesList;
 			} else {
+				// Timer for safari
+				var timer = setInterval(() => {
+				    var voices = speechSynthesis.getVoices();
+				    if (voices.length !== 0) {
+				      _addVoicesList();
+				      clearInterval(timer);
+				    }
+				}, 200);
+				/*
 				// Fix some issues on safari
 				setTimeout(() => {
 					// Sometimes IOS has no voice (bug)
@@ -110,7 +119,7 @@ let Speech = ((window) => {
 						window.speechSynthesis.getVoices = () => fallbackIosVoices;	
 					}
 					_addVoicesList();
-				}, 300);
+				}, 300);*/
 			}
 
 		}
