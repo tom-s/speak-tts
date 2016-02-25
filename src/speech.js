@@ -105,58 +105,24 @@ let Speech = ((window) => {
 	  return false;
 	}
 
+	function _splitSentences() {
+		let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
+		return _.chain(sentences).map(_.trim).compact().value();
+	}
+
 	function _init(conf) {
 		// Import conf
 		if(conf) CONF =_.merge(CONF, conf);
 
 		// Polyfill
 		if(!_browserSupport()) {
-			window.speechSynthesis = {
-		        speak(utterance) {
-		            let url = 'http://translate.google.com/translate_tts?&q=' + encodeURIComponent(utterance.text) + '&tl=' + utterance.lang;
-		            audio = new Audio(url);
-		            audio.volume = utterance.volume;
-		            audio.play();
-		            audio.addEventListener('ended', () => {
-		            	audio = null;
-
-		            });
-		            audio.addEventListener('play', utterance.onstart);
-		        },
-
-		        splitSentences(text) {
-		        	return [text]; // no need to splut
-		        },
-
-		        cancel() {
-		        	if(audio) audio.stop();
-		        }
-		    };
-
-		    window.SpeechSynthesisUtterance = function (text) {
-				return {
-					lang: 'fr-FR',
-					volume: CONF.volume,
-					onend: function () {},
-		            onstart: function () {},
-					text: text
-				};
-			};
+			return false;
 		} else {
-			delete window.speechSynthesis.splitSentences;
-			window.speechSynthesis.splitSentences = function(text) {
-				alert('splut sentenaces' + text);
-				let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
-				alert('sentances' + sentences.length);
-				return _.chain(sentences).map(_.trim).compact().value();
-			}
-			
 			// On Chrome, voices are loaded asynchronously
 			if ('onvoiceschanged' in window.speechSynthesis) {
     			speechSynthesis.onvoiceschanged = _addVoicesList;
 			} else {
 				var iosVersion = _iOSversion();
-				alert('IOS version' + iosVersion);
 
 				if(iosVersion) {
 					_initIOS(iosVersion);
@@ -196,16 +162,13 @@ let Speech = ((window) => {
 		// Sometimes IOS has no voice (bug), so we try to handle it
 		if(version >= 9) {
 			if(window.speechSynthesis.getVoices().length === 0) {
-				alert('use ios9 cached voices');
 				delete window.speechSynthesis.getVoices;
 				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices
-				alert(window.speechSynthesis.getVoices().length + 'voices');
 			}
 		} else if(version >= 8) {
 			// Try with a timeout
 			setTimeout(() => {
 				if(window.speechSynthesis.getVoices().length === 0) {
-					alert('use ios8 cached voices');
 					delete window.speechSynthesis.getVoices;
 					window.speechSynthesis.getVoices = () => iOS8voices; // use cached voices	
 				}
@@ -239,17 +202,11 @@ let Speech = ((window) => {
 	}
 
 	function _stop() {
-		alert('stop !' + window.speechSynthesis.cancel);
-		try {
-			window.speechSynthesis.cancel();
-		} catch(err) {
-			alert('errro canceling');
-		}
+		window.speechSynthesis.cancel();
 	}
 
 	function _speak(msg) {
 		msg = _.trim(msg);
-		alert('speak' + msg);
 		if(!msg || msg === '.') return; // when click on empty space value is '.' for some weird reason
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
@@ -262,14 +219,11 @@ let Speech = ((window) => {
 			}
 		})();
 
-		alert('lang is ' + lang);
-
 		// Stop current speech
-		//_stop(); TODO: make it work in safari
+		_stop();
 
 		// Split into sentances (for better result and bug with some versions of chrome)
-		let sentences = window.speechSynthesis.splitSentences(msg);
-		alert('find voice in results' + window.speechSynthesis.getVoices().length);
+		let sentences = _splitSentences(msg);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
 			let voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
@@ -282,7 +236,6 @@ let Speech = ((window) => {
 			utterance.text = sentence;
 
 			if(voice) {
-				alert('use voice' + voice.name);
 				utterance.voice = voice;
 			}
 
