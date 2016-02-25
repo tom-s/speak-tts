@@ -240,8 +240,8 @@ let Speech = ((window) => {
 	}
 
 	function _speak(msg) {
-		alert('speak' + msg);
 		msg = _.trim(msg);
+		alert('speak' + msg);
 		if(!msg || msg === '.') return; // when click on empty space value is '.' for some weird reason
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
@@ -254,12 +254,14 @@ let Speech = ((window) => {
 			}
 		})();
 
+		alert('lang is ' + lang);
+
 		// Stop current speech
 		_stop();
 
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = window.speechSynthesis.splitSentences(msg);
-		alert('find voice for language ' + lang + ' in results' + window.speechSynthesis.getVoices().length);
+		alert('find voice in results' + window.speechSynthesis.getVoices().length);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
 			let voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
