@@ -105,7 +105,7 @@ let Speech = ((window) => {
 	  return false;
 	}
 
-	function _splitSentences() {
+	function _splitSentences(text) {
 		let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
 		return _.chain(sentences).map(_.trim).compact().value();
 	}
@@ -220,7 +220,7 @@ let Speech = ((window) => {
 		})();
 
 		// Stop current speech
-		//_stop();
+		_stop();
 
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = _splitSentences(msg);
