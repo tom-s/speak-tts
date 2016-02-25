@@ -196,7 +196,7 @@ let Speech = ((window) => {
 				alert('use ios9 cached voices');
 				delete window.speechSynthesis.getVoices;
 				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices
-				alert(window.speechSynthesis.getVoices.length + 'voices');
+				alert(window.speechSynthesis.getVoices().length + 'voices');
 			}
 		} else if(version >= 8) {
 			// Try with a timeout
