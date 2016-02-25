@@ -1,6 +1,6 @@
 {
   "name": "select-and-speak",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "description": "Select and speak",
   "main": "index.js",
   "scripts": {

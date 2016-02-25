@@ -183,8 +183,6 @@ let Speech = ((window) => {
 			}
 		})();
 
-		alert('search voice for lang' + lang);
-
 		// Stop current speech
 		_stop();
 
@@ -201,7 +199,6 @@ let Speech = ((window) => {
 			utterance.text = sentence;
 
 			if(voice) {
-				alert('use voice' + voice.name + ' ' + voice.lang);
 				utterance.voice = voice;
 			}
 
