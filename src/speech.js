@@ -238,7 +238,7 @@ let Speech = ((window) => {
 	}
 
 	function _stop() {
-		alert('stop !');
+		alert('stop !' + window.speechSynthesis.cancel);
 		if(window.speechSynthesis.cancel) window.speechSynthesis.cancel();
 	}
 
