@@ -57,12 +57,14 @@ let Speech = ((window) => {
 				return _.chain(sentences).map(_.trim).compact().value();
 			}
 
-
-			// wait on voices to be loaded before fetching list
+			// Fix some issues on safari
+			setTimeout(() => {
+				_addVoicesList();
+			}, 100);
+			
+			// On Chrome, voices are loaded asynchronously
 			if ('onvoiceschanged' in window.speechSynthesis) {
     			speechSynthesis.onvoiceschanged = _addVoicesList;
-			} else {
-				_addVoicesList();
 			}
 
 		}
@@ -133,7 +135,7 @@ let Speech = ((window) => {
 		})();
 
 		// Stop current speech
-		//_stop();
+		_stop();
 
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = window.speechSynthesis.splitSentences(msg);
