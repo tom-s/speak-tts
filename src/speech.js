@@ -122,7 +122,7 @@ let Speech = ((window) => {
 
 	function _speak(msg) {
 		msg = _.trim(msg);
-		if(!msg || msg === '.') return;
+		if(!msg || msg === '.') return; // when click on empty space value is '.' for some weird reason
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
 			var flang = franc(msg, {'whitelist' : ['eng', 'fra', 'deu']});
@@ -134,6 +134,8 @@ let Speech = ((window) => {
 			}
 		})();
 
+		alert('search voice for lang', lang);
+
 		// Stop current speech
 		_stop();
 
@@ -141,7 +143,7 @@ let Speech = ((window) => {
 		let sentences = window.speechSynthesis.splitSentences(msg);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
-			let voices = _.filter(window.speechSynthesis.getVoices(), (voice) => { 
+			let voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang === lang;
 			});
 			utterance.volume = parseFloat(CONF.volume); // 0 to 1
@@ -149,8 +151,9 @@ let Speech = ((window) => {
 			utterance.pitch = parseFloat(CONF.pitch); //0 to 2
 			utterance.text = sentence;
 
-			if(voices.length > 0) {
-				utterance.voice = _.first(voices);
+			if(voice) {
+				alert('use voice' + voice.name + ' ' + voice.lang);
+				utterance.voice = voice;
 			}
 
 			/*
