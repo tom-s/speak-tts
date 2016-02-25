@@ -258,6 +258,7 @@ let Speech = ((window) => {
 
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = window.speechSynthesis.splitSentences(msg);
+		alert('find voice for language ' + lang + ' in results' + window.speechSynthesis.getVoices().length);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
 			let voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
