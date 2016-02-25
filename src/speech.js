@@ -105,13 +105,6 @@ let Speech = ((window) => {
 	  return false;
 	}
 
-	function _splitSentences(text) {
-		alert('splut sentenaces' + text);
-		let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
-		alert('sentances' + sentences.length);
-		return _.chain(sentences).map(_.trim).compact().value();
-	}
-
 	function _init(conf) {
 		// Import conf
 		if(conf) CONF =_.merge(CONF, conf);
@@ -131,6 +124,10 @@ let Speech = ((window) => {
 		            audio.addEventListener('play', utterance.onstart);
 		        },
 
+		        splitSentences(text) {
+		        	return [text]; // no need to splut
+		        },
+
 		        cancel() {
 		        	if(audio) audio.stop();
 		        }
@@ -146,6 +143,13 @@ let Speech = ((window) => {
 				};
 			};
 		} else {
+			delete window.speechSynthesis.splitSentences;
+			window.speechSynthesis.splitSentences = function(text) {
+				alert('splut sentenaces' + text);
+				let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
+				alert('sentances' + sentences.length);
+				return _.chain(sentences).map(_.trim).compact().value();
+			}
 			
 			// On Chrome, voices are loaded asynchronously
 			if ('onvoiceschanged' in window.speechSynthesis) {
@@ -264,7 +268,7 @@ let Speech = ((window) => {
 		//_stop(); TODO: make it work in safari
 
 		// Split into sentances (for better result and bug with some versions of chrome)
-		let sentences = _splitSentences(msg);
+		let sentences = window.speechSynthesis.splitSentences(msg);
 		alert('find voice in results' + window.speechSynthesis.getVoices().length);
 		_.forEach(sentences, (sentence) => {
 			let utterance = new window.SpeechSynthesisUtterance();
