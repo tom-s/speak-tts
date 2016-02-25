@@ -11,6 +11,10 @@ let Speech = ((window) => {
 		'pitch': 1
 	};
 
+	 //Fallback cache voices for ios
+	const fallbackIosVoices = [{"name":"he-IL","voiceURI":"he-IL","lang":"he-IL"},{"name":"th-TH","voiceURI":"th-TH","lang":"th-TH"},{"name":"pt-BR","voiceURI":"pt-BR","lang":"pt-BR"},{"name":"sk-SK","voiceURI":"sk-SK","lang":"sk-SK"},{"name":"fr-CA","voiceURI":"fr-CA","lang":"fr-CA"},{"name":"ro-RO","voiceURI":"ro-RO","lang":"ro-RO"},{"name":"no-NO","voiceURI":"no-NO","lang":"no-NO"},{"name":"fi-FI","voiceURI":"fi-FI","lang":"fi-FI"},{"name":"pl-PL","voiceURI":"pl-PL","lang":"pl-PL"},{"name":"de-DE","voiceURI":"de-DE","lang":"de-DE"},{"name":"nl-NL","voiceURI":"nl-NL","lang":"nl-NL"},{"name":"id-ID","voiceURI":"id-ID","lang":"id-ID"},{"name":"tr-TR","voiceURI":"tr-TR","lang":"tr-TR"},{"name":"it-IT","voiceURI":"it-IT","lang":"it-IT"},{"name":"pt-PT","voiceURI":"pt-PT","lang":"pt-PT"},{"name":"fr-FR","voiceURI":"fr-FR","lang":"fr-FR"},{"name":"ru-RU","voiceURI":"ru-RU","lang":"ru-RU"},{"name":"es-MX","voiceURI":"es-MX","lang":"es-MX"},{"name":"zh-HK","voiceURI":"zh-HK","lang":"zh-HK"},{"name":"sv-SE","voiceURI":"sv-SE","lang":"sv-SE"},{"name":"hu-HU","voiceURI":"hu-HU","lang":"hu-HU"},{"name":"zh-TW","voiceURI":"zh-TW","lang":"zh-TW"},{"name":"es-ES","voiceURI":"es-ES","lang":"es-ES"},{"name":"zh-CN","voiceURI":"zh-CN","lang":"zh-CN"},{"name":"nl-BE","voiceURI":"nl-BE","lang":"nl-BE"},{"name":"en-GB","voiceURI":"en-GB","lang":"en-GB"},{"name":"ar-SA","voiceURI":"ar-SA","lang":"ar-SA"},{"name":"ko-KR","voiceURI":"ko-KR","lang":"ko-KR"},{"name":"cs-CZ","voiceURI":"cs-CZ","lang":"cs-CZ"},{"name":"en-ZA","voiceURI":"en-ZA","lang":"en-ZA"},{"name":"en-AU","voiceURI":"en-AU","lang":"en-AU"},{"name":"da-DK","voiceURI":"da-DK","lang":"da-DK"},{"name":"en-US","voiceURI":"en-US","lang":"en-US"},{"name":"en-IE","voiceURI":"en-IE","lang":"en-IE"},{"name":"hi-IN","voiceURI":"hi-IN","lang":"hi-IN"},{"name":"el-GR","voiceURI":"el-GR","lang":"el-GR"},{"name":"ja-JP","voiceURI":"ja-JP","lang":"ja-JP"}];
+
+
 	// For polyfill
 	let audio = null;
 
@@ -56,15 +60,19 @@ let Speech = ((window) => {
 				let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
 				return _.chain(sentences).map(_.trim).compact().value();
 			}
-
-			// Fix some issues on safari
-			setTimeout(() => {
-				_addVoicesList();
-			}, 100);
 			
 			// On Chrome, voices are loaded asynchronously
 			if ('onvoiceschanged' in window.speechSynthesis) {
     			speechSynthesis.onvoiceschanged = _addVoicesList;
+			} else {
+				// Fix some issues on safari
+				setTimeout(() => {
+					// Sometimes IOS has no voice (bug)
+					if(window.speechSynthesis.getVoices().length === 0) {
+						window.speechSynthesis.getVoices = () => fallbackIosVoices;	
+					}
+					_addVoicesList();
+				}, 300);
 			}
 
 		}
@@ -86,12 +94,15 @@ let Speech = ((window) => {
 		}		
 	}
 
+
 	function _addVoicesList() {
 		let list = window.document.createElement('div');
+		list.innerHTML += '<h2>Voices</h2><p>';
 		var voices = window.speechSynthesis.getVoices();
 		_.forEach(voices, (voice) => {
 			list.innerHTML += voice.name + ' (' + voice.lang + ')' + ' ';
 		});
+		list.innerHTML += '</p>';
 		window.document.body.appendChild(list);
 	}
 
