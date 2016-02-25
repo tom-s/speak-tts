@@ -100,7 +100,7 @@ let Speech = ((window) => {
 	function _iOSversion() {
 	    if (/(iPhone|iPad|iPod)/.test(navigator.platform)) {
 	        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
-	        return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
+	        return parseInt(v[1], 10);
 	    }
 	  return false;
 	}
@@ -150,7 +150,7 @@ let Speech = ((window) => {
 			
 			// On Chrome, voices are loaded asynchronously
 			if ('onvoiceschanged' in window.speechSynthesis) {
-    			//speechSynthesis.onvoiceschanged = _addVoicesList;
+    			speechSynthesis.onvoiceschanged = _addVoicesList;
 			} else {
 				var iosVersion = _iOSversion();
 				alert('IOS version' + iosVersion);
@@ -178,7 +178,6 @@ let Speech = ((window) => {
 		}		
 	}
 
-	/*
 	function _addVoicesList() {
 		let list = window.document.createElement('div');
 		list.innerHTML += '<h2>Voices</h2><p>';
@@ -188,7 +187,7 @@ let Speech = ((window) => {
 		});
 		list.innerHTML += '</p>';
 		window.document.body.appendChild(list);
-	}*/
+	}
 
 	function _initIOS(version) {
 		// Sometimes IOS has no voice (bug), so we try to handle it
@@ -204,6 +203,8 @@ let Speech = ((window) => {
 				}
 			}, 100);
 		}
+
+		_addVoicesList();
 
 		// if not 8 or 7, not worth trying anything
 	}
