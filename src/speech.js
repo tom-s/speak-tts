@@ -103,23 +103,14 @@ let Speech = ((window) => {
 			if ('onvoiceschanged' in window.speechSynthesis) {
     			speechSynthesis.onvoiceschanged = _addVoicesList;
 			} else {
-				// Timer for safari
-				var timer = setInterval(() => {
-				    var voices = speechSynthesis.getVoices();
-				    if (voices.length !== 0) {
-				      _addVoicesList();
-				      clearInterval(timer);
-				    }
-				}, 200);
-				/*
 				// Fix some issues on safari
 				setTimeout(() => {
 					// Sometimes IOS has no voice (bug)
 					if(window.speechSynthesis.getVoices().length === 0) {
-						window.speechSynthesis.getVoices = () => fallbackIosVoices;	
+						//window.speechSynthesis.getVoices = () => fallbackIosVoices;	
 					}
 					_addVoicesList();
-				}, 300);*/
+				}, 300);
 			}
 
 		}
@@ -202,6 +193,7 @@ let Speech = ((window) => {
 			let voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang === lang;
 			});
+			utterance.lang = lang;
 			utterance.volume = parseFloat(CONF.volume); // 0 to 1
 			utterance.rate = parseFloat(CONF.rate); // 0.1 to 10
 			utterance.pitch = parseFloat(CONF.pitch); //0 to 2
