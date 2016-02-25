@@ -264,7 +264,7 @@ let Speech = ((window) => {
 		alert('lang is ' + lang);
 
 		// Stop current speech
-		_stop();
+		//_stop(); TODO: make it work in safari
 
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = window.speechSynthesis.splitSentences(msg);
