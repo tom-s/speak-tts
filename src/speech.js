@@ -190,6 +190,7 @@ let Speech = ((window) => {
 
 	function _initIOS(version) {
 		// Sometimes IOS has no voice (bug), so we try to handle it
+		alert('IOS version', version);
 		if(version >= 9) {
 			if(window.speechSynthesis.getVoices().length === 0) {
 				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices	
