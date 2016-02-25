@@ -240,6 +240,7 @@ let Speech = ((window) => {
 	}
 
 	function _speak(msg) {
+		alert('speak' + msg);
 		msg = _.trim(msg);
 		if(!msg || msg === '.') return; // when click on empty space value is '.' for some weird reason
 		var lang = (() => {
