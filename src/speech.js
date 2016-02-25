@@ -151,12 +151,13 @@ let Speech = ((window) => {
 				utterance.voice = _.first(voices);
 			}
 
+			/*
 			utterance.onerror = (e) => {
 				alert('error');
 	    	};
 	    	utterance.onend = (e) => {
-	    	};
-    	
+	    	};*/
+
 			window.speechSynthesis.speak(utterance);
 		});
 	}
