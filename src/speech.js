@@ -144,7 +144,9 @@ let Speech = ((window) => {
 			};
 		} else {
 			window.speechSynthesis.splitSentences = function(text) {
+				alert('splut sentenaces' + text);
 				let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|");
+				alert('sentances' + sentences.length);
 				return _.chain(sentences).map(_.trim).compact().value();
 			}
 			
@@ -236,6 +238,7 @@ let Speech = ((window) => {
 	}
 
 	function _stop() {
+		alert('stop !');
 		window.speechSynthesis.cancel();
 	}
 
