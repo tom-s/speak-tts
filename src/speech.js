@@ -193,12 +193,14 @@ let Speech = ((window) => {
 		// Sometimes IOS has no voice (bug), so we try to handle it
 		if(version >= 9) {
 			if(window.speechSynthesis.getVoices().length === 0) {
+				alert('use ios9 cached voices');
 				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices	
 			}
 		} else if(version >= 8) {
 			// Try with a timeout
 			setTimeout(() => {
 				if(window.speechSynthesis.getVoices().length === 0) {
+					alert('use ios8 cached voices');
 					window.speechSynthesis.getVoices = () => iOS8voices; // use cached voices	
 				}
 			}, 100);
@@ -265,6 +267,7 @@ let Speech = ((window) => {
 			utterance.text = sentence;
 
 			if(voice) {
+				alert('use voice' + voice.name);
 				utterance.voice = voice;
 			}
 
