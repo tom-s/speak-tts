@@ -134,7 +134,7 @@ let Speech = ((window) => {
 			}
 		})();
 
-		alert('search voice for lang', lang);
+		alert('search voice for lang' + lang);
 
 		// Stop current speech
 		_stop();
