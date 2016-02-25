@@ -194,13 +194,16 @@ let Speech = ((window) => {
 		if(version >= 9) {
 			if(window.speechSynthesis.getVoices().length === 0) {
 				alert('use ios9 cached voices');
-				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices	
+				delete window.speechSynthesis.getVoices;
+				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices
+				alert(window.speechSynthesis.getVoices.length + 'voices');
 			}
 		} else if(version >= 8) {
 			// Try with a timeout
 			setTimeout(() => {
 				if(window.speechSynthesis.getVoices().length === 0) {
 					alert('use ios8 cached voices');
+					delete window.speechSynthesis.getVoices;
 					window.speechSynthesis.getVoices = () => iOS8voices; // use cached voices	
 				}
 			}, 100);
