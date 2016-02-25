@@ -239,7 +239,7 @@ let Speech = ((window) => {
 
 	function _stop() {
 		alert('stop !');
-		window.speechSynthesis.cancel();
+		if(window.speechSynthesis.cancel) window.speechSynthesis.cancel();
 	}
 
 	function _speak(msg) {
