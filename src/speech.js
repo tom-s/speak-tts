@@ -220,7 +220,7 @@ let Speech = ((window) => {
 		})();
 
 		// Stop current speech
-		_stop();
+		//_stop();
 
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = _splitSentences(msg);
