@@ -98,7 +98,7 @@ let Speech = ((window) => {
 	let audio = null;
 
 	function _iOSversion() {
-	    if (/iP(hone|od|ad)/.test(navigator.platform)) {
+	    if (/(iPhone|iPad|iPod)/.test(navigator.platform)) {
 	        var v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/);
 	        return [parseInt(v[1], 10), parseInt(v[2], 10), parseInt(v[3] || 0, 10)];
 	    }
@@ -153,6 +153,8 @@ let Speech = ((window) => {
     			//speechSynthesis.onvoiceschanged = _addVoicesList;
 			} else {
 				var iosVersion = _iOSversion();
+				alert('IOS version' + iosVersion);
+
 				if(iosVersion) {
 					_initIOS(iosVersion);
 				}
@@ -190,7 +192,6 @@ let Speech = ((window) => {
 
 	function _initIOS(version) {
 		// Sometimes IOS has no voice (bug), so we try to handle it
-		alert('IOS version', version);
 		if(version >= 9) {
 			if(window.speechSynthesis.getVoices().length === 0) {
 				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices	
