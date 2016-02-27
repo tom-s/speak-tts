@@ -1,4 +1,4 @@
-Speech synthesis made easy - Browser based TTS
+Speech synthesis made easy - Browser based text to speech (TTS)
 ===
 
 ## Installation
