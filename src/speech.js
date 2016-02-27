@@ -1,14 +1,13 @@
 import _ from 'lodash';
 import franc from 'franc';
-import rangy from 'rangy/lib/rangy-textrange';
 
-let Speech = ((window) => {
-	
+const Speech = ((window) => {
 	let CONF = {
-		//'lang' : 'en-GB', // if no language specified, automatic detection will be done
+		'lang': null,
 		'volume': 1,
 		'rate': 1,
-		'pitch': 1
+		'pitch': 1,
+		'onVoicesLoaded': (data) => {}
 	};
 
 	 //Fallback cache voices for ios
@@ -115,12 +114,16 @@ let Speech = ((window) => {
 		if(conf) CONF =_.merge(CONF, conf);
 
 		// Polyfill
-		if(!_browserSupport()) {
+		if(!browserSupport()) {
 			return false;
 		} else {
 			// On Chrome, voices are loaded asynchronously
 			if ('onvoiceschanged' in window.speechSynthesis) {
-    			speechSynthesis.onvoiceschanged = _addVoicesList;
+    			speechSynthesis.onvoiceschanged = _.debounce(() => {
+    				if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
+	    				voices: window.speechSynthesis.getVoices()
+	    			});
+    			}, 300);
 			} else {
 				var iosVersion = _iOSversion();
 
@@ -131,17 +134,6 @@ let Speech = ((window) => {
 		}	
 	}
 
-	function _addVoicesList() {
-		let list = window.document.createElement('div');
-		list.innerHTML += '<h2>Voices</h2><p>';
-		var voices = window.speechSynthesis.getVoices();
-		_.forEach(voices, (voice) => {
-			list.innerHTML += voice.name + ' (' + voice.lang + ')' + ' ';
-		});
-		list.innerHTML += '</p>';
-		window.document.body.appendChild(list);
-	}
-
 	function _initIOS(version) {
 		// Sometimes IOS has no voice (bug), so we try to handle it
 		if(version >= 9) {
@@ -149,22 +141,26 @@ let Speech = ((window) => {
 				delete window.speechSynthesis.getVoices;
 				window.speechSynthesis.getVoices = () => iOS9voices; // use cached voices
 			}
+			if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
+	    		voices: window.speechSynthesis.getVoices()
+	    	});
 		} else if(version >= 8) {
 			// Try with a timeout
 			setTimeout(() => {
 				if(window.speechSynthesis.getVoices().length === 0) {
 					delete window.speechSynthesis.getVoices;
-					window.speechSynthesis.getVoices = () => iOS8voices; // use cached voices	
+					window.speechSynthesis.getVoices = () => iOS8voices; // use cached voices
 				}
+				if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
+		    		voices: window.speechSynthesis.getVoices()
+		    	});
 			}, 100);
 		}
-
-		_addVoicesList();
 
 		// if not 8 or 7, not worth trying anything
 	}
 
-	function _browserSupport() {
+	function browserSupport() {
 		return ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
 	}
 
@@ -172,25 +168,64 @@ let Speech = ((window) => {
 		window.speechSynthesis.cancel();
 	}
 
+	function setLanguage(lang) {
+		if(lang) CONF.lang = lang;
+	}
+
 	function speak(data) {
-		var msg = _.trim(_.get(data, 'msg'));
+		var msg = _.trim(_.get(data, 'text'));
 		var onEnd = _.get(data, 'onEnd');
 		var onError = _.get(data, 'onError');
 
 		if(!msg || msg === '.') return; // when click on empty space value is '.' for some weird reason
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
-			var flang = franc(msg, {'whitelist' : ['eng', 'fra', 'deu']});
+			var flang = franc(msg);
 			switch(flang) {
-				case 'eng': return 'en-GB';
-				case 'fra': return 'fr-FR';
-				case 'deu': return 'de-DE';
-				default: return 'en-GB';
-			}
+				case 'arb': return "ar-SA"; // arabic
+		        case 'ces': return "cs-CZ"; // czech
+		        case 'dan': return "da-DK"; // danish
+		        case 'ger': return "de-DE"; // german
+		        case 'ell': return "el-GR"; // greek
+		        //case '': return "en-AU"; // australian
+		        case 'eng': return "en-GB"; // english
+		        //case '': return "en-IE";
+		  		//case '': return "en-US";
+		        //case '': return "en-US";
+		        //case '': return "en-ZA";
+		        case 'spa': return "es-ES"; // spanish
+		        //case '': return "es-MX";
+		        case 'fin': return "fi-FI"; // finish
+		        //case '': return "fr-CA";
+		        case 'fra': return "fr-FR"; // french
+		        case 'heb': return "he-IL"; // hebrew
+		        case 'hin': return "hi-IN"; // hindi
+		        case 'hun': return "hu-HU"; // hungarian
+		        case 'ind': return "id-ID"; // indonesian
+		        case 'ita': return "it-IT"; // italian
+		        case 'jpn': return "ja-JP"; // japanese
+		        case 'kor': return "ko-KR"; // korean
+		        //case '': return "nl-BE";
+		        case 'nld': return "nl-NL"; // dutch
+		        case 'nno': return "no-NO"; // norwegian
+		        case 'pol': return "pl-PL"; // polish
+		        //case 'por': return "pt-BR"; // portuguese brazilian
+		        case 'por': return "pt-PT"; // portuguese
+		        case 'ron': return "ro-RO"; // romanian
+		        case 'rus': return "ru-RU"; // russian
+		        case 'slk': return "sk-SK"; // slovak
+		        case 'swe': return "sv-SE"; // swedish
+		        case 'tha': return "th-TH"; // thai
+		        case 'tuk': return "tr-TR"; // turkish
+		  		case 'cmn': return "zh-CN"; // chinese (S)
+		  		//case '': return "zh-HK"; // chinese hong kong
+		  		//case '': return "zh-TW"; // chinese (T)				
+		  		default: return 'en-US';
+		  	}
 		})();
 
 		// Stop current speech
-		_stop();
+		stop();
 
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = _splitSentences(msg);
@@ -221,10 +256,11 @@ let Speech = ((window) => {
 	}
 
 	return {
-		init: _init,
-		browserSupport: _browserSupport,
+		init: init,
+		browserSupport: browserSupport,
 		speak: speak,
-		stop: stop
+		stop: stop,
+		setLanguage: setLanguage
 	}
 })(window);
 

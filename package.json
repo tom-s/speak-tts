@@ -1,7 +1,7 @@
 {
-  "name": "select-and-speak",
-  "version": "0.2.0",
-  "description": "Select and speak",
+  "name": "speaks-tts",
+  "version": "0.0.1",
+  "description": "Browser TTS (using speechSynthesis API)",
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server --devtool eval --progress --colors --content-base demo/build --hot --inline",
@@ -11,10 +11,10 @@
   "keywords": [
     "speech synthesis",
     "speak",
-    "select",
-    "text",
-    "text selection",
-    "tts"
+    "speechSynthesis",
+    "SpeechSynthesisUtterance",
+    "tts",
+    "language detection"
   ],
   "license": "ISC",
   "devDependencies": {
@@ -26,20 +26,14 @@
     "babel-preset-stage-0": "^6.5.0",
     "babel-preset-stage-2": "^6.0.0",
     "babel-runtime": "^5.8.3",
-    "css-loader": "^0.15.5",
-    "file-loader": "^0.8.4",
-    "style-loader": "^0.12.3",
-    "url-loader": "^0.5.6",
     "webpack": "^1.10.5",
     "webpack-dev-server": "^1.10.1"
   },
   "dependencies": {
-    "franc": "^1.1.2",
-    "imports-loader": "^0.6.5",
-    "install": "^0.4.1",
     "json-loader": "^0.5.4",
+    "franc": "^1.1.2",
+    "install": "^0.4.1",
     "lodash": "^3.10.0",
-    "npm": "^3.5.2",
-    "rangy": "^1.3.0"
+    "npm": "^3.5.2"
   }
 }
