@@ -23,14 +23,14 @@ function _prepareSpeakButton() {
 }
 
 Speech.init({
-	onVoicesLoaded: function(data) {
+	onVoicesLoaded: (data) => {
 		_addVoicesList(data.voices);
 		_prepareSpeakButton();
-	}
-});
+		Speech.speak({
+			text: 'Hello, how are you today ?'
+		});
 
-Speech.speak({
-	text: 'Hello, how are you today ?'
+	}
 });
 
 let text = (Speech.browserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !";

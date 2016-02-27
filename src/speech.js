@@ -123,7 +123,7 @@ const Speech = ((window) => {
     				if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
 	    				voices: window.speechSynthesis.getVoices()
 	    			});
-    			}, 300);
+    			}, 500);
 			} else {
 				var iosVersion = _iOSversion();
 
@@ -242,6 +242,9 @@ const Speech = ((window) => {
 
 			if(voice) {
 				utterance.voice = voice;
+			} else {
+				if(onError) onError({msg: 'no voice available'});
+				return;
 			}
 
 			utterance.onerror = (e) => {

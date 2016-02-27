@@ -1,4 +1,4 @@
-Speech synthesis - Browser based TTS
+Speech synthesis made easy - Browser based TTS
 ===
 
 ## Installation
@@ -9,13 +9,13 @@ npm install speak-tts
 
 ## Description
 
-Speech synthesis (tts) with (optionnal) language detection. Based on browser SpeechSynthesis API, it improves it by handling the quirks and bugs of IOS devices and some chrome versions. Work in Chrome, opera and Safari (including ios8 and ios9 devices such as the ipad)
+Speech synthesis (tts) with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by handling the quirks and bugs of IOS devices and some chrome versions. Work in Chrome, opera and Safari (including ios8 and ios9 devices such as the ipad).
 See browser support here : http://caniuse.com/#feat=speech-synthesis
 
 ## Demo
 
-Here is a demo of my select and speak module that uses speak-tts for speech synthesis.
-[Here](http://experiments.thomschell.com/select-and-speak/demo/dist)
+Here is a demo:
+[Here](http://experiments.thomschell.com/speak-tts/demo/dist)
 
 ## Usage
 
@@ -32,6 +32,7 @@ Speech.init();
 ```
 
 You can pass the following properties at init time:
+- onVoicesLoaded: callback function triggered when voices are loaded (happens asynchronously)
 - volume
 - rate
 - pitch
@@ -40,7 +41,8 @@ You can pass the following properties at init time:
 ```bash
 // Example with full conf
 Speech.init({
-    'lang': 'en-GB', // force en-GB language (no detection applied)
+	'onVoicesLoaded': (data) => {console.log('voices', data.voices)},
+    'lang': 'en-GB', // specify en-GB language (no detection applied)
     'volume': 0.5,
     'rate': 0.8,
     'pitch': 0.8
@@ -59,9 +61,16 @@ Read a text :
 ```bash
 Speech.speak({
 	text: 'Hello, how are you today ?',
-	onError:  function() {console.log('sorry an error occured.')}, // optionnal error callback
+	onError:  function(e) {console.log('sorry an error occured.', e)}, // optionnal error callback
 	onEnd: function() {console.log('your text has successfully been spoken.')} // optionnal onEnd callback
 });
+```
+
+Set language (no autodetection applied) :
+
+```bash
+Speech.setLanguage('en-GB'); // set language to english
+Speech.setLanguage(null); // activate language autodetection
 ```
 
 Stop talking:
@@ -108,6 +117,47 @@ Speech.stop();
 	"zh-CN" // chinese (S)
 	"zh-HK" // chinese hong kong
 	"zh-TW" // chinese (T'en-US';
+
+## Full demo code
+
+```bash
+import Speech from '../src/speech.js';
+
+function _addVoicesList(voices) {
+	let list = window.document.createElement('div');
+	let html = '<h2>Available Voices</h2><select id="languages"><option value="">autodetect language</option>';
+	_.forEach(voices, (voice) => {
+		html += '<option value="' + voice.lang + '"">' + voice.name + ' (' + voice.lang + ')</option>';
+	});
+	list.innerHTML = html;
+	window.document.body.appendChild(list);
+}
+
+function _prepareSpeakButton() {
+	const speakButton = document.getElementById('play');
+	const textarea = document.getElementById('text');
+	const languages = document.getElementById('languages');
+	speakButton.addEventListener('click', () => {
+		Speech.setLanguage(languages.value);
+		Speech.speak({
+			text: textarea.value
+		});
+	});
+}
+
+Speech.init({
+	onVoicesLoaded: (data) => {
+		_addVoicesList(data.voices);
+		_prepareSpeakButton();
+		Speech.speak({
+			text: 'Hello, how are you today ?'
+		});
+	}
+});
+
+let text = (Speech.browserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !";
+document.getElementById("support").innerHTML = text;
+```
 
 ## Tests
 
