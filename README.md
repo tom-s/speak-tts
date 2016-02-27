@@ -9,7 +9,7 @@ npm install speak-tts
 
 ## Description
 
-Speech synthesis (tts) with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by handling the quirks and bugs of IOS devices and some chrome versions. Also split sentances into several speeches to make it sound more natural. Work in Chrome, opera and Safari (including ios8 and ios9 devices such as the ipad).
+Speech synthesis (tts) with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by handling some quirks and bugs of IOS/android devices and some chrome versions. Also split sentances into several speeches to make it sound more natural. Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
 See browser support here : http://caniuse.com/#feat=speech-synthesis
 
 ## Demo

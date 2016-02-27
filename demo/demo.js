@@ -15,9 +15,7 @@ function _prepareSpeakButton() {
 	const textarea = document.getElementById('text');
 	const languages = document.getElementById('languages');
 	speakButton.addEventListener('click', () => {
-		alert('set language ' + languages.value);
 		Speech.setLanguage(languages.value);
-		alert("speak " + textarea.value);
 		Speech.speak({
 			text: textarea.value
 		});

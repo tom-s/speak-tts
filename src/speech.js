@@ -236,7 +236,6 @@ const Speech = ((window) => {
 		// Split into sentances (for better result and bug with some versions of chrome)
 		let sentences = _splitSentences(msg);
 		_.forEach(sentences, (sentence) => {
-			alert('sentence : ' + sentence);
 			let utterance = new window.SpeechSynthesisUtterance();
 			let voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
 				return voice.lang.replace('_', '-') === lang; // handle android specificites
@@ -250,7 +249,6 @@ const Speech = ((window) => {
 			if(voice) {
 				utterance.voice = voice;
 			} else {
-				alert('no voice available');
 				if(onError) onError({msg: 'no voice available'});
 				return;
 			}
