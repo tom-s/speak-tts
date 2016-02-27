@@ -24,12 +24,12 @@ function _prepareSpeakButton() {
 
 Speech.init({
 	onVoicesLoaded: (data) => {
+		console.log("loaded voices", data.voices);
 		_addVoicesList(data.voices);
 		_prepareSpeakButton();
 		Speech.speak({
 			text: 'Hello, how are you today ?'
 		});
-
 	}
 });
 
