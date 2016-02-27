@@ -24,16 +24,21 @@ function _prepareSpeakButton() {
 	});
 }
 
-Speech.init({
-	onVoicesLoaded: (data) => {
-		console.log("loaded voices", data.voices);
-		_addVoicesList(data.voices);
-		_prepareSpeakButton();
-		Speech.speak({
-			text: 'Hello, how are you today ?'
-		});
-	}
-});
+document.addEventListener("load", (event) => {
+	// Indicate supports
+	let text = (Speech.browserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !";
+	document.getElementById("support").innerHTML = text;
 
-let text = (Speech.browserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !";
-document.getElementById("support").innerHTML = text;
+	// Intialize speech
+	Speech.init({
+		onVoicesLoaded: (data) => {
+			console.log("loaded voices", data.voices);
+			_addVoicesList(data.voices);
+			_prepareSpeakButton();
+			Speech.speak({
+				text: 'Hello, how are you today ?'
+			});
+		}
+	});
+}
+
