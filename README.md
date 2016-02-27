@@ -171,5 +171,5 @@ I am a full-stack Javascript developer based in Lyon, France.
 
 ## License
 
-speech and speak is dual licensed under the MIT license and GPL.
+speech-tts is dual licensed under the MIT license and GPL.
 For more information click [here](https://opensource.org/licenses/MIT).
