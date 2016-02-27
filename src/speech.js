@@ -121,6 +121,7 @@ const Speech = ((window) => {
 			if ('onvoiceschanged' in window.speechSynthesis) {
     			speechSynthesis.onvoiceschanged = _.debounce(() => {
     				if(currentVoices.length !== window.speechSynthesis.getVoices().length) {
+	    				currentVoices = window.speechSynthesis.getVoices();
 	    				if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
 		    				voices: window.speechSynthesis.getVoices()
 		    			});
