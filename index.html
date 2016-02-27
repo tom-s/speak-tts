@@ -27,7 +27,7 @@
 <h2>
 <a id="description" class="anchor" href="#description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Description</h2>
 
-<p>Speech synthesis (tts) with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by handling the quirks and bugs of IOS devices and some chrome versions. Also split sentances into several speeches to make it sound more natural. Work in Chrome, opera and Safari (including ios8 and ios9 devices such as the ipad).
+<p>Speech synthesis (tts) with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by handling some quirks and bugs of IOS/android devices and some chrome versions. Also split sentences into several speeches to make it sound more natural. Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
 See browser support here : <a href="http://caniuse.com/#feat=speech-synthesis">http://caniuse.com/#feat=speech-synthesis</a></p>
 
 <h2>
@@ -76,8 +76,8 @@ Speech.init({
 
 <div class="highlight highlight-source-shell"><pre>Speech.speak({
     text: <span class="pl-s"><span class="pl-pds">'</span>Hello, how are you today ?<span class="pl-pds">'</span></span>,
-    onError:  function(e) {console.log(<span class="pl-s"><span class="pl-pds">'</span>sorry an error occured.<span class="pl-pds">'</span></span>, e)}, // optionnal error callback
-    onEnd: <span class="pl-en">function</span>() {console.log(<span class="pl-s"><span class="pl-pds">'</span>your text has successfully been spoken.<span class="pl-pds">'</span></span>)} // optionnal onEnd callback
+    onError: (e) =<span class="pl-k">&gt;</span> {console.log(<span class="pl-s"><span class="pl-pds">'</span>sorry an error occured.<span class="pl-pds">'</span></span>, e)}, // optionnal error callback
+    <span class="pl-en">onEnd:</span> () =<span class="pl-k">&gt;</span> {console.log(<span class="pl-s"><span class="pl-pds">'</span>your text has successfully been spoken.<span class="pl-pds">'</span></span>)} // optionnal onEnd callback
 })<span class="pl-k">;</span></pre></div>
 
 <p>Set language (note that the language must be supported by the client browser) :</p>
