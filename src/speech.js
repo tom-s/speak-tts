@@ -135,7 +135,9 @@ const Speech = ((window) => {
 					_initIOS(iosVersion);
 				}
 			}
-		}	
+		}
+
+		return Speech;
 	}
 
 	function _initIOS(version) {
