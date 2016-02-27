@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Speak-tts by tom-s</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Speak-tts</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/tom-s/speak-tts" class="btn">View on GitHub</a>
+      <a href="https://github.com/tom-s/speak-tts/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/tom-s/speak-tts/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="speech-synthesis-made-easy---browser-based-tts" class="anchor" href="#speech-synthesis-made-easy---browser-based-tts" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Speech synthesis made easy - Browser based TTS</h1>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<div class="highlight highlight-source-shell"><pre>npm install speak-tts</pre></div>
+
+<h2>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Description</h2>
+
+<p>Speech synthesis (tts) with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by handling the quirks and bugs of IOS devices and some chrome versions. Also split sentances into several speeches to make it sound more natural. Work in Chrome, opera and Safari (including ios8 and ios9 devices such as the ipad).
+See browser support here : <a href="http://caniuse.com/#feat=speech-synthesis">http://caniuse.com/#feat=speech-synthesis</a></p>
+
+<h2>
+<a id="demo" class="anchor" href="#demo" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Demo</h2>
+
+<p>Here is a demo:
+<a href="http://experiments.thomschell.com/speak-tts/demo/dist">Here</a></p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>Import the component :</p>
+
+<div class="highlight highlight-source-shell"><pre>import Speech from <span class="pl-s"><span class="pl-pds">'</span>speech-tts<span class="pl-pds">'</span></span><span class="pl-k">;</span></pre></div>
+
+<p>Start the component :</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-en">Speech.init</span>();</pre></div>
+
+<p>You can pass the following properties at init time:</p>
+
+<ul>
+<li>onVoicesLoaded: callback function triggered when voices are loaded (happens asynchronously)</li>
+<li>volume</li>
+<li>rate</li>
+<li>pitch</li>
+<li>lang : if you don't pass a language, the language of the given text will be automatically detected thanks to franc (<a href="https://github.com/wooorm/franc">https://github.com/wooorm/franc</a>). If you pass a language, this will be used for all audio outputs (nevertheless the language of the selected text)</li>
+</ul>
+
+<div class="highlight highlight-source-shell"><pre>// Example with full conf
+Speech.init({
+    <span class="pl-s"><span class="pl-pds">'</span>onVoicesLoaded<span class="pl-pds">'</span></span>: (data) =<span class="pl-k">&gt;</span> {console.log(<span class="pl-s"><span class="pl-pds">'</span>voices<span class="pl-pds">'</span></span>, data.voices)},
+    <span class="pl-s"><span class="pl-pds">'</span>lang<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>en-GB<span class="pl-pds">'</span></span>, // specify en-GB language (no detection applied)
+    <span class="pl-s"><span class="pl-pds">'</span>volume<span class="pl-pds">'</span></span>: 0.5,
+    <span class="pl-s"><span class="pl-pds">'</span>rate<span class="pl-pds">'</span></span>: 0.8,
+    <span class="pl-s"><span class="pl-pds">'</span>pitch<span class="pl-pds">'</span></span>: 0.8
+})<span class="pl-k">;</span></pre></div>
+
+<p>Check browser support :</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-k">if</span>(<span class="pl-en">Speech.browserSupport</span>()) {
+    console.log(<span class="pl-s"><span class="pl-pds">"</span>speech synthesis supported<span class="pl-pds">"</span></span>)
+}</pre></div>
+
+<p>Read a text :</p>
+
+<div class="highlight highlight-source-shell"><pre>Speech.speak({
+    text: <span class="pl-s"><span class="pl-pds">'</span>Hello, how are you today ?<span class="pl-pds">'</span></span>,
+    onError:  function(e) {console.log(<span class="pl-s"><span class="pl-pds">'</span>sorry an error occured.<span class="pl-pds">'</span></span>, e)}, // optionnal error callback
+    onEnd: <span class="pl-en">function</span>() {console.log(<span class="pl-s"><span class="pl-pds">'</span>your text has successfully been spoken.<span class="pl-pds">'</span></span>)} // optionnal onEnd callback
+})<span class="pl-k">;</span></pre></div>
+
+<p>Set language (note that the language must be supported by the client browser) :</p>
+
+<div class="highlight highlight-source-shell"><pre>Speech.setLanguage(<span class="pl-s"><span class="pl-pds">'</span>en-GB<span class="pl-pds">'</span></span>)<span class="pl-k">;</span> // <span class="pl-c1">set</span> language to english
+Speech.setLanguage(null)<span class="pl-k">;</span> // activate language autodetection</pre></div>
+
+<p>Stop talking:</p>
+
+<div class="highlight highlight-source-shell"><pre><span class="pl-en">Speech.stop</span>();</pre></div>
+
+<h2>
+<a id="supported-languages" class="anchor" href="#supported-languages" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Supported languages</h2>
+
+<pre><code>"ar-SA" // arabic
+"cs-CZ" // czech
+"da-DK" // danish
+"de-DE" // german
+"el-GR" // greek
+"en-AU" // australian
+"en-GB" // english
+"en-IE"
+"en-US"
+"en-US"
+"en-ZA"
+"es-ES" // spanish
+"es-MX"
+"fi-FI" // finish
+"fr-CA"
+"fr-FR" // french
+"he-IL" // hebrew
+"hi-IN" // hindi
+"hu-HU" // hungarian
+"id-ID" // indonesian
+"it-IT" // italian
+"ja-JP" // japanese
+"ko-KR" // korean
+"nl-NL" // dutch
+"no-NO" // norwegian
+"pl-PL" // polish
+"pt-BR" // portuguese brazilian
+"pt-PT" // portuguese
+"ro-RO" // romanian
+"ru-RU" // russian
+"sk-SK" // slovak
+"sv-SE" // swedish
+"th-TH" // thai
+"tr-TR" // turkish
+"zh-CN" // chinese (S)
+"zh-HK" // chinese hong kong
+"zh-TW" // chinese (T'en-US';
+</code></pre>
+
+<h2>
+<a id="full-demo-code" class="anchor" href="#full-demo-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Full demo code</h2>
+
+<div class="highlight highlight-source-shell"><pre>import Speech from <span class="pl-s"><span class="pl-pds">'</span>../src/speech.js<span class="pl-pds">'</span></span><span class="pl-k">;</span>
+
+<span class="pl-k">function</span> <span class="pl-en">_addVoicesList(voices)</span> {
+    <span class="pl-c1">let</span> list = window.document.createElement(<span class="pl-s"><span class="pl-pds">'</span>div<span class="pl-pds">'</span></span>)<span class="pl-k">;</span>
+    <span class="pl-c1">let</span> html = <span class="pl-s"><span class="pl-pds">'</span>&lt;h2&gt;Available Voices&lt;/h2&gt;&lt;select id="languages"&gt;&lt;option value=""&gt;autodetect language&lt;/option&gt;<span class="pl-pds">'</span></span><span class="pl-k">;</span>
+    _.forEach(voices, (voice) =<span class="pl-k">&gt;</span> {
+        html += <span class="pl-s"><span class="pl-pds">'</span>&lt;option value="<span class="pl-pds">'</span></span> + voice.lang + <span class="pl-s"><span class="pl-pds">'</span>""&gt;<span class="pl-pds">'</span></span> + voice.name + <span class="pl-s"><span class="pl-pds">'</span> (<span class="pl-pds">'</span></span> + voice.lang + <span class="pl-s"><span class="pl-pds">'</span>)&lt;/option&gt;<span class="pl-pds">'</span></span><span class="pl-k">;</span>
+    })<span class="pl-k">;</span>
+    list.innerHTML = html<span class="pl-k">;</span>
+    window.document.body.appendChild(list)<span class="pl-k">;</span>
+}
+
+<span class="pl-k">function</span> <span class="pl-en">_prepareSpeakButton()</span> {
+    const speakButton = document.getElementById(<span class="pl-s"><span class="pl-pds">'</span>play<span class="pl-pds">'</span></span>)<span class="pl-k">;</span>
+    const textarea = document.getElementById(<span class="pl-s"><span class="pl-pds">'</span>text<span class="pl-pds">'</span></span>)<span class="pl-k">;</span>
+    const languages = document.getElementById(<span class="pl-s"><span class="pl-pds">'</span>languages<span class="pl-pds">'</span></span>)<span class="pl-k">;</span>
+    <span class="pl-en">speakButton.addEventListener('click',</span> () =<span class="pl-k">&gt;</span> {
+        Speech.setLanguage(languages.value)<span class="pl-k">;</span>
+        Speech.speak({
+            text: textarea.value
+        })<span class="pl-k">;</span>
+    });
+}
+
+Speech.init({
+    onVoicesLoaded: (data) =<span class="pl-k">&gt;</span> {
+        _addVoicesList(data.voices)<span class="pl-k">;</span>
+        <span class="pl-en">_prepareSpeakButton</span>();
+        Speech.speak({
+            text: <span class="pl-s"><span class="pl-pds">'</span>Hello, how are you today ?<span class="pl-pds">'</span></span>
+        })<span class="pl-k">;</span>
+    }
+})<span class="pl-k">;</span>
+
+<span class="pl-c1">let</span> text = (<span class="pl-en">Speech.browserSupport</span>()) <span class="pl-k">?</span> <span class="pl-s"><span class="pl-pds">'</span>Hurray, your browser supports speech synthesis<span class="pl-pds">'</span></span> <span class="pl-c1">:</span> <span class="pl-s"><span class="pl-pds">"</span>Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !<span class="pl-pds">"</span></span>;
+document.getElementById(<span class="pl-s"><span class="pl-pds">"</span>support<span class="pl-pds">"</span></span>).innerHTML = text<span class="pl-k">;</span></pre></div>
+
+<h2>
+<a id="tests" class="anchor" href="#tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Tests</h2>
+
+<p>These will be added soon. Please do not hesitate to add some !</p>
+
+<h2>
+<a id="about-the-author" class="anchor" href="#about-the-author" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>About the Author</h2>
+
+<p>I am a full-stack Javascript developer based in Lyon, France.</p>
+
+<p><a href="http://www.thomschell.com">Check out my website</a></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h2>
+
+<p>speech and speak is dual licensed under the MIT license and GPL.
+For more information click <a href="https://opensource.org/licenses/MIT">here</a>.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/tom-s/speak-tts">Speak-tts</a> is maintained by <a href="https://github.com/tom-s">tom-s</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
