@@ -1,4 +1,4 @@
-import Speech from '../src/speech.js';
+import Speech from '../src/speak-tts.js';
 
 function _addVoicesList(voices) {
 	let list = window.document.createElement('div');

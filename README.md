@@ -22,7 +22,7 @@ Here is a demo:
 Import the component :
 
 ```bash
-import Speech from 'speech-tts';
+import Speech from 'speak-tts';
 ```
 
 Start the component :
@@ -121,7 +121,7 @@ Speech.stop();
 ## Full demo code
 
 ```bash
-import Speech from '../src/speech.js';
+import Speech from 'speak-tts';
 
 function _addVoicesList(voices) {
 	let list = window.document.createElement('div');

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import franc from 'franc';
 
-const Speech = ((window) => {
+const SpeakTTS = ((window) => {
 	let CONF = {
 		'lang': null,
 		'volume': 1,
@@ -273,4 +273,4 @@ const Speech = ((window) => {
 	}
 })(window);
 
-export default Speech;
+export default SpeakTTS;
