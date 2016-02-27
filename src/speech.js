@@ -110,7 +110,7 @@ let Speech = ((window) => {
 		return _.chain(sentences).map(_.trim).compact().value();
 	}
 
-	function _init(conf) {
+	function init(conf) {
 		// Import conf
 		if(conf) CONF =_.merge(CONF, conf);
 
@@ -128,23 +128,7 @@ let Speech = ((window) => {
 					_initIOS(iosVersion);
 				}
 			}
-		}
-
-		// Start listening to events
-		if(_touchSupport()) {
-			// Append button
-			let button =_addTouchButton();
-			button.addEventListener('click', (e) => {
-				let text = _getSelectedText();
-				_speak(text);
-			});
-		} else {
-			window.addEventListener('mouseup', (e) => {
-				let text = _getSelectedText();
-				_speak(text);
-				e.preventDefault();
-			});
-		}		
+		}	
 	}
 
 	function _addVoicesList() {
@@ -180,33 +164,19 @@ let Speech = ((window) => {
 		// if not 8 or 7, not worth trying anything
 	}
 
-	function _addTouchButton() {
-		let button = window.document.createElement('button');
-		button.innerHTML = "Select some text and click here";
-		button.style.height = '50px';
-		window.document.body.appendChild(button);
-		return button;
-	}
-	
 	function _browserSupport() {
 		return ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
 	}
 
-	function _touchSupport() {
-		return ('ontouchstart' in window || navigator.maxTouchPoints);       // works on IE10/11 and Surface
-	}
-
-	function _getSelectedText() {
-		rangy.getSelection().expand('word'); // expand selection to word so that we don't have half words
-	  	return rangy.getSelection().toString();
-	}
-
-	function _stop() {
+	function stop() {
 		window.speechSynthesis.cancel();
 	}
 
-	function _speak(msg) {
-		msg = _.trim(msg);
+	function speak(data) {
+		var msg = _.trim(_.get(data, 'msg'));
+		var onEnd = _.get(data, 'onEnd');
+		var onError = _.get(data, 'onError');
+
 		if(!msg || msg === '.') return; // when click on empty space value is '.' for some weird reason
 		var lang = (() => {
 			if(CONF.lang) return CONF.lang;
@@ -239,12 +209,12 @@ let Speech = ((window) => {
 				utterance.voice = voice;
 			}
 
-			/*
 			utterance.onerror = (e) => {
-				alert('error');
+				if(onError) onError();
 	    	};
 	    	utterance.onend = (e) => {
-	    	};*/
+	    		if(onEnd) onEnd();
+	    	};
 
 			window.speechSynthesis.speak(utterance);
 		});
@@ -252,7 +222,9 @@ let Speech = ((window) => {
 
 	return {
 		init: _init,
-		browserSupport: _browserSupport
+		browserSupport: _browserSupport,
+		speak: speak,
+		stop: stop
 	}
 })(window);
 
