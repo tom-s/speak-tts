@@ -66,7 +66,7 @@ Speech.speak({
 });
 ```
 
-Set language :
+Set language (note that the language must be supported by the client browser) :
 
 ```bash
 Speech.setLanguage('en-GB'); // set language to english
