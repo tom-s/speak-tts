@@ -239,7 +239,7 @@ const Speech = ((window) => {
 			alert('sentence : ' + sentence);
 			let utterance = new window.SpeechSynthesisUtterance();
 			let voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
-				return voice.lang === lang;
+				return voice.lang.replace('_', '-') === lang; // handle android specificites
 			});
 			utterance.lang = lang;
 			utterance.volume = parseFloat(CONF.volume); // 0 to 1
