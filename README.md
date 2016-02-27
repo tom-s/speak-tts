@@ -66,7 +66,7 @@ Speech.speak({
 });
 ```
 
-Set language (no autodetection applied) :
+Set language :
 
 ```bash
 Speech.setLanguage('en-GB'); // set language to english
