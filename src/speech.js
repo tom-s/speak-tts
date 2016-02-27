@@ -93,8 +93,8 @@ const Speech = ((window) => {
 		  { name: "Mei-Jia", voiceURI: "com.apple.ttsbundle.Mei-Jia-compact", lang: "zh-TW", localService: true, "default": true }
 		];
 
-	// For polyfill
-	let audio = null;
+	// Because chrome triggers voicechanged to often
+	let currentVoices = [];
 
 	function _iOSversion() {
 	    if (/(iPhone|iPad|iPod)/.test(navigator.platform)) {
@@ -120,10 +120,13 @@ const Speech = ((window) => {
 			// On Chrome, voices are loaded asynchronously
 			if ('onvoiceschanged' in window.speechSynthesis) {
     			speechSynthesis.onvoiceschanged = _.debounce(() => {
-    				if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
-	    				voices: window.speechSynthesis.getVoices()
-	    			});
-    			}, 1000);
+    				if(currentVoices.length !== window.speechSynthesis.getVoices().length) {
+	    				if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
+		    				voices: window.speechSynthesis.getVoices()
+		    			});
+    				}
+    				
+    			}, 300);
 			} else {
 				var iosVersion = _iOSversion();
 
