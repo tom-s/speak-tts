@@ -61,8 +61,8 @@ Read a text :
 ```bash
 Speech.speak({
 	text: 'Hello, how are you today ?',
-	onError:  function(e) {console.log('sorry an error occured.', e)}, // optionnal error callback
-	onEnd: function() {console.log('your text has successfully been spoken.')} // optionnal onEnd callback
+	onError: (e) => {console.log('sorry an error occured.', e)}, // optionnal error callback
+	onEnd: () => {console.log('your text has successfully been spoken.')} // optionnal onEnd callback
 });
 ```
 
