@@ -123,7 +123,7 @@ const Speech = ((window) => {
     				if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
 	    				voices: window.speechSynthesis.getVoices()
 	    			});
-    			}, 500);
+    			}, 1000);
 			} else {
 				var iosVersion = _iOSversion();
 
