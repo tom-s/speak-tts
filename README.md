@@ -1,6 +1,9 @@
 Speech synthesis made easy - Browser based text to speech (TTS)
 ===
 
+## Github dedicated page
+[http://tom-s.github.io/speak-tts/](http://tom-s.github.io/speak-tts/)
+
 ## Installation
 
 ```bash
