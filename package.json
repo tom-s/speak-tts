@@ -1,8 +1,8 @@
 {
   "name": "speak-tts",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Browser TTS (using speechSynthesis API) made easy",
-  "main": "index.js",
+  "main": "lib/speak-tts.js",
   "scripts": {
     "dev": "webpack-dev-server --devtool eval --progress --colors --content-base demo/build --hot --inline",
     "deploy": "NODE_ENV=production webpack -p --config webpack.production.config.js",
