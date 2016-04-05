@@ -22,7 +22,8 @@ Here is a demo:
 Import the component :
 
 ```bash
-import Speech from 'speak-tts'
+import Speech from 'speak-tts' // es6
+// var Speech = require('speak-tts') //es5
 ```
 
 Start the component :
