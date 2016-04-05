@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "webpack-dev-server --devtool eval --progress --colors --content-base demo/build --hot --inline",
+    "deploy": "NODE_ENV=production webpack -p --config webpack.production.config.js",
     "compile": "babel -d lib/ src/",
     "prepublish": "npm run compile"
   },
