@@ -23,7 +23,7 @@ Import the component :
 
 ```bash
 import Speech from 'speak-tts' // es6
-// var Speech = require('speak-tts') //es5
+// var Speech = require('speak-tts') //if you use es5
 ```
 
 Start the component :
@@ -47,7 +47,7 @@ Speech.init({
     'volume': 0.5,
     'rate': 0.8,
     'pitch': 0.8
-});
+})
 ```
 Check browser support :
 
@@ -64,20 +64,20 @@ Speech.speak({
 	text: 'Hello, how are you today ?',
 	onError: (e) => {console.log('sorry an error occured.', e)}, // optionnal error callback
 	onEnd: () => {console.log('your text has successfully been spoken.')} // optionnal onEnd callback
-});
+})
 ```
 
 Set language (note that the language must be supported by the client browser) :
 
 ```bash
-Speech.setLanguage('en-GB'); // set language to english
-Speech.setLanguage(null); // activate language autodetection
+Speech.setLanguage('en-GB') // set language to english
+Speech.setLanguage(null) // activate language autodetection
 ```
 
 Stop talking:
 
 ```bash
-Speech.stop();
+Speech.stop()
 ```
 
 ## Supported languages
@@ -122,7 +122,7 @@ Speech.stop();
 ## Full demo code (es6 example)
 
 ```bash
-import Speech from '../src/speak-tts.js'
+import Speech from 'speak-tts'
 
 const _addVoicesList = (voices) => {
   const list = window.document.createElement('div')
