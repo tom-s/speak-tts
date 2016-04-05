@@ -136,7 +136,6 @@ const SpeakTTS = ((window) => {
         }
       }
     }
-    return Speech
   }
 
   const _initIOS = (version) => {
