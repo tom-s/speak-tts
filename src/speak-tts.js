@@ -1,5 +1,5 @@
-import _ from 'lodash';
-import franc from 'franc';
+import _ from 'lodash'
+import franc from 'franc'
 
 const SpeakTTS = ((window) => {
   let CONF = {
