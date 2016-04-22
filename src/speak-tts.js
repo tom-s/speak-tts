@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import { trim, debounce, get } from 'lodash'
 import franc from 'franc'
 
 const SpeakTTS = ((window) => {
@@ -51,7 +51,7 @@ const SpeakTTS = ((window) => {
     {name: "el-GR", voiceURI: "el-GR", lang: "el-GR", localService: true, default: true},
     {name: "ja-JP", voiceURI: "ja-JP", lang: "ja-JP", localService: true, default: true}
   ]
-  
+
   // IOS9
   const iOS9voices = [
     { name: "Maged", voiceURI: "com.apple.ttsbundle.Maged-compact", lang: "ar-SA", localService: true, "default": true },
@@ -107,12 +107,12 @@ const SpeakTTS = ((window) => {
 
   const _splitSentences = (text) => {
     let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|")
-    return _.chain(sentences).map(_.trim).compact().value()
+    return sentences.map(sentence => trim(sentence))
   }
 
   const init = (conf) => {
     // Import conf
-    if(conf) CONF =_.merge(CONF, conf)
+    if(conf) CONF = { ...CONF, ...conf }
 
     // Polyfill
     if(!browserSupport()) {
@@ -120,14 +120,14 @@ const SpeakTTS = ((window) => {
     } else {
       // On Chrome, voices are loaded asynchronously
       if ('onvoiceschanged' in window.speechSynthesis) {
-        speechSynthesis.onvoiceschanged = _.debounce(() => {
+        speechSynthesis.onvoiceschanged = debounce(() => {
           if(currentVoices.length !== window.speechSynthesis.getVoices().length) {
             currentVoices = window.speechSynthesis.getVoices()
             if(CONF.onVoicesLoaded) CONF.onVoicesLoaded({
                 voices: window.speechSynthesis.getVoices()
               })
             }
-            
+
           }, 300)
       } else {
         const iosVersion = _iOSversion()
@@ -176,9 +176,8 @@ const SpeakTTS = ((window) => {
   }
 
   const speak = (data) => {
-    const msg = _.trim(_.get(data, 'text'))
-    const onEnd = _.get(data, 'onEnd')
-    const onError = _.get(data, 'onError')
+    const { text, onEnd, onError } = data
+    const msg = trim(text)
 
     if(!msg || msg === '.') return // when click on empty space value is '.' for some weird reason
     const lang = (() => {
@@ -221,9 +220,9 @@ const SpeakTTS = ((window) => {
 
     // Split into sentances (for better result and bug with some versions of chrome)
     const sentences = _splitSentences(msg)
-    _.forEach(sentences, (sentence) => {
+    sentences.forEach(sentence => {
       const utterance = new window.SpeechSynthesisUtterance()
-      const voice = _.find(window.speechSynthesis.getVoices(), (voice) => { 
+      const voice = window.speechSynthesis.getVoices().find(voice => {
         return voice.lang.replace('_', '-') === lang // handle android specificites
       })
       utterance.lang = lang
