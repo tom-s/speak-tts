@@ -105,10 +105,11 @@ const SpeakTTS = ((window) => {
     return false
   }
 
-  const _splitSentences = (text) => {
-    let sentences = text.replace(/\.+/g,'.|').replace(/\?/g,'?|').replace(/\!/g,'!|').split("|")
-    return sentences.map(sentence => trim(sentence))
-  }
+  const _splitSentences = (text) => text.replace(/\.+/g,'.|')
+    .replace(/\?/g,'?|')
+    .replace(/\!/g,'!|')
+    .split("|")
+    .map(sentence => trim(sentence))
 
   const init = (conf) => {
     // Import conf
@@ -220,7 +221,8 @@ const SpeakTTS = ((window) => {
 
     // Split into sentances (for better result and bug with some versions of chrome)
     const sentences = _splitSentences(msg)
-    sentences.forEach(sentence => {
+    sentences.forEach((sentence, index) => {
+      const isLast = index === sentences.length - 1
       const utterance = new window.SpeechSynthesisUtterance()
       const voice = window.speechSynthesis.getVoices().find(voice => {
         return voice.lang.replace('_', '-') === lang // handle android specificites
@@ -242,7 +244,7 @@ const SpeakTTS = ((window) => {
         if(onError) onError()
       }
       utterance.onend = (e) => {
-        if(onEnd) onEnd()
+        if(onEnd && isLast) onEnd()
       }
 
       window.speechSynthesis.speak(utterance)

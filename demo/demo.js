@@ -17,7 +17,10 @@ function _prepareSpeakButton() {
 	speakButton.addEventListener('click', () => {
 		Speech.setLanguage(languages.value)
 		Speech.speak({
-			text: textarea.value
+			text: textarea.value,
+			onEnd: () => {
+				console.log('end of text')
+			}
 		})
 	})
 }
@@ -28,7 +31,10 @@ Speech.init({
 		_addVoicesList(data.voices)
 		_prepareSpeakButton()
 		Speech.speak({
-			text: 'Hello, how are you today ?'
+			text: 'Hello, how are you today ?',
+			onEnd: () => {
+				console.log('end of text')
+			},
 		})
 	}
 });

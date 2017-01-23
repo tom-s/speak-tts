@@ -21,7 +21,6 @@ var config = {
                 exclude: /node_modules/,
                 loader: "babel-loader",
                 query: {
-                  plugins: ['transform-runtime'],
                   presets: ['es2015']
                 }
             },
