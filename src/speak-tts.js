@@ -1,4 +1,6 @@
-import { trim, debounce, get } from 'lodash'
+import trim from 'lodash/trim'
+import debounce from 'lodash/debounce'
+import get from 'lodash/get'
 import franc from 'franc'
 
 const SpeakTTS = ((window) => {

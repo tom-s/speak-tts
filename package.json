@@ -41,6 +41,6 @@
   },
   "dependencies": {
     "franc": "^1.1.2",
-    "lodash": "^3.10.0"
+    "lodash": "^4.17.4"
   }
 }
