@@ -243,7 +243,7 @@ const SpeakTTS = ((window) => {
       }
 
       utterance.onerror = (e) => {
-        if(onError) onError()
+        if(onError) onError(e)
       }
       utterance.onend = (e) => {
         if(onEnd && isLast) onEnd()
