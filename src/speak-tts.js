@@ -9,6 +9,7 @@ const SpeakTTS = ((window) => {
     'volume': 1,
     'rate': 1,
     'pitch': 1,
+    'voice': null,
     'onVoicesLoaded': (data) => {}
   }
 
@@ -178,6 +179,24 @@ const SpeakTTS = ((window) => {
     if(lang) CONF.lang = lang
   }
 
+  const setVoice = (voice) => {
+      let voices = window.speechSynthesis.getVoices()
+      // set voice by ID/index
+      if (typeof voice === 'number') {
+          voice = voices[i]
+      }
+      // set voice by name
+      if (typeof voice === 'string') {
+          voice = voices.find((v) => {
+              return v.name === voice
+          });
+      }
+      // Set the voice in conf if found
+      if (typeof voice === 'object') {
+          CONF.voice = voice
+      }
+  }
+
   const speak = (data) => {
     const { text, onEnd, onError } = data
     const msg = trim(text)
@@ -218,6 +237,14 @@ const SpeakTTS = ((window) => {
       }
     })()
 
+    // Get configured voice, or first for current language
+    const voice = ((lang) => {
+        if(CONF.voice) return CONF.voice
+        return window.speechSynthesis.getVoices().find(voice => {
+          return voice.lang.replace('_', '-') === lang // handle android specificites
+        })
+    })(lang)
+
     // Stop current speech
     stop()
 
@@ -226,18 +253,14 @@ const SpeakTTS = ((window) => {
     sentences.forEach((sentence, index) => {
       const isLast = index === sentences.length - 1
       const utterance = new window.SpeechSynthesisUtterance()
-      const voice = window.speechSynthesis.getVoices().find(voice => {
-        return voice.lang.replace('_', '-') === lang // handle android specificites
-      })
       utterance.lang = lang
       utterance.volume = parseFloat(CONF.volume) // 0 to 1
       utterance.rate = parseFloat(CONF.rate) // 0.1 to 10
       utterance.pitch = parseFloat(CONF.pitch) //0 to 2
       utterance.text = sentence
+      utterance.voice = voice
 
-      if(voice) {
-        utterance.voice = voice
-      } else {
+      if(!voice) {
         if(onError) onError({msg: 'no voice available'})
         return
       }
@@ -245,6 +268,7 @@ const SpeakTTS = ((window) => {
       utterance.onerror = (e) => {
         if(onError) onError(e)
       }
+
       utterance.onend = (e) => {
         if(onEnd && isLast) onEnd()
       }
@@ -258,7 +282,8 @@ const SpeakTTS = ((window) => {
     browserSupport: browserSupport,
     speak: speak,
     stop: stop,
-    setLanguage: setLanguage
+    setLanguage: setLanguage,
+    setVoice: setVoice
   }
 })(window)
 
