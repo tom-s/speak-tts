@@ -38,6 +38,7 @@ You can pass the following properties at init time:
 - rate
 - pitch
 - lang : if you don't pass a language, the language of the given text will be automatically detected thanks to franc (https://github.com/wooorm/franc). If you pass a language, this will be used for all audio outputs (nevertheless the language of the selected text)
+- voice : the voice to use. If you do not pass a voice, the first one available for `lang` will be used
 
 ```bash
 // Example with full conf
