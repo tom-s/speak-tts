@@ -4,7 +4,7 @@ const _addVoicesList = (voices) => {
 	const list = window.document.createElement('div')
 	let html = '<h2>Available Voices</h2><select id="languages"><option value="">autodetect language</option>'
 	voices.forEach((voice) => {
-		html += '<option value="' + voice.lang + '"">' + voice.name + ' (' + voice.lang + ')</option>'
+		html += `<option value="${voice.lang}" data-name="${voice.name}">${voice.name} (${voice.lang})</option>`
 	})
 	list.innerHTML = html
 	window.document.body.appendChild(list)
@@ -16,6 +16,7 @@ function _prepareSpeakButton() {
 	const languages = document.getElementById('languages')
 	speakButton.addEventListener('click', () => {
 		Speech.setLanguage(languages.value)
+        Speech.setVoice(languages.options[languages.selectedIndex].dataset.name)
 		Speech.speak({
 			text: textarea.value,
 			onEnd: () => {
