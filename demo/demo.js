@@ -1,5 +1,23 @@
 import Speech from '../src/speak-tts.js'
 
+const speech = new Speech({
+	'volume': 0.5,
+    'rate': 0.8,
+    'pitch': 0.8,
+    'voice': 'Samantha',
+	onVoicesLoaded: (data) => {
+		console.log("loaded voices", data.voices)
+		_addVoicesList(data.voices)
+		_prepareSpeakButton()
+		Speech.speak({
+			text: 'Hello, how are you today ?',
+			onEnd: () => {
+				console.log('end of text')
+			},
+		})
+	}
+})
+
 const _addVoicesList = (voices) => {
 	const list = window.document.createElement('div')
 	let html = '<h2>Available Voices</h2><select id="languages"><option value="">autodetect language</option>'
@@ -15,9 +33,9 @@ function _prepareSpeakButton() {
 	const textarea = document.getElementById('text')
 	const languages = document.getElementById('languages')
 	speakButton.addEventListener('click', () => {
-		Speech.setLanguage(languages.value)
-        Speech.setVoice(languages.options[languages.selectedIndex].dataset.name)
-		Speech.speak({
+		speech.setLanguage(languages.value)
+    speech.setVoice(languages.options[languages.selectedIndex].dataset.name)
+		speech.speak({
 			text: textarea.value,
 			onEnd: () => {
 				console.log('end of text')
@@ -26,19 +44,7 @@ function _prepareSpeakButton() {
 	})
 }
 
-Speech.init({
-	onVoicesLoaded: (data) => {
-		console.log("loaded voices", data.voices)
-		_addVoicesList(data.voices)
-		_prepareSpeakButton()
-		Speech.speak({
-			text: 'Hello, how are you today ?',
-			onEnd: () => {
-				console.log('end of text')
-			},
-		})
-	}
-});
 
-const text = (Speech.browserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !"
+
+const text = (speech.browserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !"
 document.getElementById("support").innerHTML = text
