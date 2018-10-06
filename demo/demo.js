@@ -1,24 +1,5 @@
 import Speech from '../src/speak-tts.js'
 
-const speech = new Speech({
-	'volume': 0.5,
-    'rate': 0.8,
-    'pitch': 0.8,
-    'voice': 'Samantha',
-	onVoicesLoaded: (data) => {
-		console.log("loaded voices", data.voices)
-		_addVoicesList(data.voices)
-		_prepareSpeakButton()
-		speech.speak({
-			text: 'Hello, how are you today ?',
-			onEnd: () => {
-				console.log('end of text')
-			},
-		})
-	}
-})
-
-console.log("debug speech", speech)
 
 const _addVoicesList = (voices) => {
 	const list = window.document.createElement('div')
@@ -29,6 +10,19 @@ const _addVoicesList = (voices) => {
 	list.innerHTML = html
 	window.document.body.appendChild(list)
 }
+
+const speech = new Speech({
+	'volume': 0.5,
+	'voice':'Google UK English Female',
+  //'rate': 0.8,
+    //'pitch': 'aaa',
+		//'lang': 'en-US',
+	onVoicesLoaded: (data) => {
+		console.log("debug voicesLoaded !", data)
+		_addVoicesList(data.voices)
+		_prepareSpeakButton()
+	}
+})
 
 function _prepareSpeakButton() {
 	const speakButton = document.getElementById('play')
@@ -45,6 +39,7 @@ function _prepareSpeakButton() {
 		})
 	})
 }
+
 
 
 

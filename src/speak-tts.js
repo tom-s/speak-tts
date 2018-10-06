@@ -2,71 +2,82 @@ import trim from 'lodash/trim'
 import debounce from 'lodash/debounce'
 import size from 'lodash/size'
 import get from 'lodash/get'
+import isObject from 'lodash/isObject'
+import isString from 'lodash/isString'
+import isFinite from 'lodash/isFinite'
 import { splitSentences } from './utils'
 
 class SpeakTTS {
   constructor(conf) {
-    this.synthesisVoice = null
-    this.currentVoices = []
-    this.browserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
-    this.onVoicesLoaded = get(conf, 'onVoicesLoaded', () => {})
-    this.splitSentences = get(conf, 'splitSentences', true)
-    const lang = get(conf, 'lang', 'en-US')
-    const volume = get(conf, 'volume', 1)
-    const rate = get(conf, 'rate', 1)
-    const pitch = get(conf, 'pitch', 1)
-    const voice = get(conf, 'voice')
-   
-    // On Chrome, voices are loaded asynchronously
-    if ('onvoiceschanged' in speechSynthesis) {
-      speechSynthesis.onvoiceschanged = debounce(() => {
-        const voices = speechSynthesis.getVoices()
-        if(size(this.currentVoices) !== size(voices)) {
-          this.currentVoices = voices
-          this.onVoicesLoaded && this.onVoicesLoaded({
-              voices
-            })
-          }
-
-        }, 300)
-    } else {
-      const iosVer = iOSversion()
-      if(iosVer) {
-        this._initIOS(iosVer)
+    try {
+      this.synthesisVoice = null
+      this.currentVoices = []
+      this.browserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
+      this.onVoicesLoaded = get(conf, 'onVoicesLoaded', () => {})
+      this.splitSentences = get(conf, 'splitSentences', true)
+      const lang = get(conf, 'lang')
+      const volume = get(conf, 'volume')
+      const rate = get(conf, 'rate')
+      const pitch = get(conf, 'pitch')
+      const voice = get(conf, 'voice')
+     
+      // On Chrome, voices are loaded asynchronously
+      if ('onvoiceschanged' in speechSynthesis) {
+        speechSynthesis.onvoiceschanged = debounce(() => {
+          const voices = speechSynthesis.getVoices()
+          if(size(this.currentVoices) !== size(voices)) {
+            this.currentVoices = voices
+            this.onVoicesLoaded && this.onVoicesLoaded({
+                voices
+              })
+            }
+  
+          }, 300)
+      } else {
+        const iosVer = iOSversion()
+        if(iosVer) {
+          this._initIOS(iosVer)
+        }
       }
+  
+      // Initialize values if necessary
+      lang && this.setLanguage(lang)
+      voice && this.setVoice(voice)
+      volume && this.setVolume(volume)
+      rate && this.setRate(rate)
+      pitch && this.setPitch(pitch)
+    } catch(e) {
+      
     }
-
-    // Initialize values
-    this.setLanguage(lang)
-    this.setVoice(voice)
-    this.setVolume(volume)
-    this.setRate(rate)
-    this.setPitch(pitch)
   }
 
   _initIOS(version) {
-    // Sometimes IOS has no voice (bug), so we try to handle it
-    if(version >= 9) {
-      if(size(speechSynthesis.getVoices()) === 0) {
-        delete speechSynthesis.getVoices
-        speechSynthesis.getVoices = () => iOS9voices // use cached voices
-      }
-      this.onVoicesLoaded && this.onVoicesLoaded({
-        voices: speechSynthesis.getVoices()
-      })
-    } else if(version >= 8) {
-      // Try with a timeout
-      setTimeout(() => {
+    try {
+      // Sometimes IOS has no voice (bug), so we try to handle it
+      if(version >= 9) {
         if(size(speechSynthesis.getVoices()) === 0) {
           delete speechSynthesis.getVoices
-          speechSynthesis.getVoices = () => iOS8voices // use cached voices
+          speechSynthesis.getVoices = () => iOS9voices // use cached voices
         }
         this.onVoicesLoaded && this.onVoicesLoaded({
           voices: speechSynthesis.getVoices()
         })
-      }, 100)
+      } else if(version >= 8) {
+        // Try with a timeout
+        setTimeout(() => {
+          if(size(speechSynthesis.getVoices()) === 0) {
+            delete speechSynthesis.getVoices
+            speechSynthesis.getVoices = () => iOS8voices // use cached voices
+          }
+          this.onVoicesLoaded && this.onVoicesLoaded({
+            voices: speechSynthesis.getVoices()
+          })
+        }, 100)
+      }
+      // if not 8 or 7, not worth trying anything
+    } catch(e) {
+      throw(e)
     }
-    // if not 8 or 7, not worth trying anything
   }
 
   hasBrowserSupport() {
@@ -76,23 +87,18 @@ class SpeakTTS {
   setVoice(voice) {
     let synthesisVoice
     const voices = speechSynthesis.getVoices()
-    // set voice by ID/index
-    if (typeof voice === 'number') {
-      synthesisVoice = voices[i]
-    }
     // set voice by name
-    if (typeof voice === 'string') {
+    if (isString(voice)) {
       synthesisVoice = voices.find((v) => v.name === voice)
     }
     // Set the voice in conf if found
-    if (typeof voice === 'object') {
+    if (isObject(voice)) {
       synthesisVoice = voice
-    }
-    if(voice) {
-      this.voice = voice
     }
     if(synthesisVoice) {
       this.synthesisVoice = synthesisVoice
+    } else {
+      throw 'Error setting voice. The voice you passed is not valid or the voices have not been loaded yet.'
     }
   }
 
@@ -101,54 +107,56 @@ class SpeakTTS {
   }
 
   setVolume(volume) {
-    this.volume = volume
+      volume = parseFloat(volume)
+      if(isFinite(volume) && volume >= 0 && volume <= 1) {
+        this.volume = volume
+      } else {
+        throw 'Error setting volume. Please verify your volume value is a number between 0 and 1.'
+      }
   }
 
   setRate(rate) {
-    this.rate = rate
+    try {
+      this.rate = parseFloat(rate)
+    } catch(e) {
+      throw 'Error setting rate. Please verify your rate value is valid.'
+    }
   }
 
   setPitch(pitch) {
-    this.pitch = pitch
+    try {
+      this.pitch = parseFloat(pitch)
+    } catch(e) {
+      console.log("debug throw !!!")
+      throw 'Error setting pitch. Please verify your pitch value.'
+    }
   }
 
   speak(data) {
-    const { text, onEnd, onError } = data
+    const { text, onEnd } = data
     const msg = trim(text)
 
-    if(!msg || msg === '.') return // when click on empty space value is '.' for some weird reason
-    const lang = this.lang  || 'en-US'
-
-    // Get configured voice, or first for current language
-    const voice = (lang => ( this.synthesisVoice
-      ? this.synthesisVoice
-      :  speechSynthesis.getVoices().find(voice => get(voice, 'lang', '').replace('_', '-') === lang) // handle android specificites
-    ))(lang)
+    if(!msg || msg === '.') return // when message is an empty space value is '.' for some weird reason
 
     // Stop current speech
-    stop()
+    this.stop()
 
-    // Split into sentances (for better result and bug with some versions of chrome)
+    // Split into sentences (for better result and bug with some versions of chrome)
     const sentences = this.splitSentences
       ? splitSentences(msg)
       : [msg]
     sentences.forEach((sentence, index) => {
       const isLast = index === size(sentences) - 1
       const utterance = new SpeechSynthesisUtterance()
-      utterance.lang = lang
-      utterance.volume = parseFloat(this.volume) // 0 to 1
-      utterance.rate = parseFloat(this.rate) // 0.1 to 10
-      utterance.pitch = parseFloat(this.pitch) //0 to 2
+      if(this.voice) utterance.voice = this.synthesisVoice
+      if(this.lang) utterance.lang = this.lang
+      if(this.volume) utterance.volume = this.volume // 0 to 1
+      if(this.rate) utterance.rate = this.rate // 0.1 to 10
+      if(this.pitch) utterance.pitch = this.pitch //0 to 2
       utterance.text = sentence
-      utterance.voice = voice
-
-      if(!voice) {
-        if(onError) onError({msg: 'no voice available'})
-        return
-      }
 
       utterance.onerror = (e) => {
-        if(onError) onError(e)
+       throw(e)
       }
 
       utterance.onend = (e) => {
@@ -160,7 +168,11 @@ class SpeakTTS {
   }
 
   stop() {
-    speechSynthesis.cancel()
+    try {
+      speechSynthesis.cancel()
+    } catch(e) {
+      throw "Error stopping current utterance"
+    }
   }
 }
 
