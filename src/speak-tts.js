@@ -1,15 +1,15 @@
 import trim from 'lodash/trim'
 import debounce from 'lodash/debounce'
 import size from 'lodash/size'
-import splitSentences from './utils'
 import get from 'lodash/get'
+import { splitSentences } from './utils'
 
 class SpeakTTS {
   constructor(conf) {
     this.synthesisVoice = null
     this.currentVoices = []
-    this.hasBrowserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
-    this.onVoicesLoaded = get(conf, 'onVoicedLoaded', () => {})
+    this.browserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
+    this.onVoicesLoaded = get(conf, 'onVoicesLoaded', () => {})
     this.splitSentences = get(conf, 'splitSentences', true)
     const lang = get(conf, 'lang', 'en-US')
     const volume = get(conf, 'volume', 1)
@@ -20,10 +20,11 @@ class SpeakTTS {
     // On Chrome, voices are loaded asynchronously
     if ('onvoiceschanged' in speechSynthesis) {
       speechSynthesis.onvoiceschanged = debounce(() => {
-        if(size(this.currentVoices) !== size(speechSynthesis.getVoices())) {
-          this.currentVoices = speechSynthesis.getVoices()
+        const voices = speechSynthesis.getVoices()
+        if(size(this.currentVoices) !== size(voices)) {
+          this.currentVoices = voices
           this.onVoicesLoaded && this.onVoicesLoaded({
-              voices: speechSynthesis.getVoices()
+              voices
             })
           }
 
@@ -68,8 +69,8 @@ class SpeakTTS {
     // if not 8 or 7, not worth trying anything
   }
 
-  browserSupport() {
-    return this.hasBrowserSupport
+  hasBrowserSupport() {
+    return this.browserSupport
   }
 
   setVoice(voice) {

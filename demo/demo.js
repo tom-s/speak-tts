@@ -9,7 +9,7 @@ const speech = new Speech({
 		console.log("loaded voices", data.voices)
 		_addVoicesList(data.voices)
 		_prepareSpeakButton()
-		Speech.speak({
+		speech.speak({
 			text: 'Hello, how are you today ?',
 			onEnd: () => {
 				console.log('end of text')
@@ -17,6 +17,8 @@ const speech = new Speech({
 		})
 	}
 })
+
+console.log("debug speech", speech)
 
 const _addVoicesList = (voices) => {
 	const list = window.document.createElement('div')
