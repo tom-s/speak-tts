@@ -21,7 +21,7 @@ Here is a demo:
 
 Import the library :
 
-```bash
+```javascript
 import Speech from 'speak-tts' // es6
 // var Speech = require('speak-tts') //if you use es5
 ```
@@ -38,7 +38,7 @@ if(speech.browserSupport()) {
 
 Init the speech component :
 
-```bash
+```javascript
 const speech = new Speech()
 speech.init().then((data) => {
 	console.log("Speech is ready", data)
@@ -55,7 +55,7 @@ You can pass the following properties at init time:
 - voice : the voice to use
 - splitSentances
 
-```bash
+```javascript
 // Example with full conf
 Speech.init({
     'volume': 0.5,
@@ -65,7 +65,7 @@ Speech.init({
 		'voice':'Google UK English Male',
 		'splitSentences': true
 })
-
+```
 
 Read a text :
 

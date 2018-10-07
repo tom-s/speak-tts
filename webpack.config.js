@@ -1,34 +1,28 @@
 // webpack.config.js
 var path = require('path');
-var webpack = require('webpack');
-var node_modules = path.resolve(__dirname, 'node_modules');
 
 var config = {
     entry: {
-        demo: [ 'babel-polyfill', path.resolve(__dirname, 'demo/demo.js') ],
+        demo: [ path.resolve(__dirname, 'demo/demo.js') ],
     },
     output: {
         path: path.resolve(__dirname, 'demo/build'),
         filename: '[name].bundle.js'
     },
-    resolve: {
-        alias: {}
-    },
     module: {
-        loaders: [
+        rules: [
             {
-                test: /\.js?$/,
-                exclude: /node_modules/,
-                loader: "babel-loader",
-                query: {
-                  presets: ['es2015']
-                }
-            },
-            {
-                include: /\.json$/, loaders: ["json-loader"],
-                extensions: ['', '.json', '.js']
+            test: /\.(js)$/,
+            exclude: /node_modules/,
+            use: ['babel-loader']
             }
-        ],
+        ]
+    },
+    resolve: {
+        extensions: ['*', '.js']
+    },
+    devServer: {
+        contentBase: path.resolve(__dirname, 'demo/build')
     }
 };
 

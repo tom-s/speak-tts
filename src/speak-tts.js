@@ -58,7 +58,7 @@ class SpeakTTS {
       }
     }
 
-    return new Promise(async(resolve, reject) => {
+    return new Promise((resolve, reject) => {
       // If voices are already there, nothing to do
       if(!isEmpty(speechSynthesis.getVoices())) {
         return resolve(voices)
