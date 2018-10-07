@@ -5,7 +5,7 @@ var node_modules = path.resolve(__dirname, 'node_modules');
 
 var config = {
     entry: {
-        demo: [ path.resolve(__dirname, 'demo/demo.js') ],
+        demo: [ 'babel-polyfill', path.resolve(__dirname, 'demo/demo.js') ],
     },
     output: {
         path: path.resolve(__dirname, 'demo/build'),

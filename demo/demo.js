@@ -1,6 +1,5 @@
 import Speech from '../src/speak-tts.js'
 
-
 const _addVoicesList = (voices) => {
 	const list = window.document.createElement('div')
 	let html = '<h2>Available Voices</h2><select id="languages"><option value="">autodetect language</option>'
@@ -11,37 +10,43 @@ const _addVoicesList = (voices) => {
 	window.document.body.appendChild(list)
 }
 
-const speech = new Speech({
-	'volume': 0.5,
-	'voice':'Google UK English Female',
-  //'rate': 0.8,
-    //'pitch': 'aaa',
-		//'lang': 'en-US',
-	onVoicesLoaded: (data) => {
-		console.log("debug voicesLoaded !", data)
+function _init() {
+	const speech = new Speech()
+	speech.init({
+		'volume': 0.5,
+		'lang': 'en-GB',
+		'rate': 1,
+		'pitch': 1,
+		//'voice':'Google UK English Male',
+		//'splitSentences': false
+	}).then((data) => {
+		console.log("Speech is ready", data)
 		_addVoicesList(data.voices)
-		_prepareSpeakButton()
-	}
-})
+		_prepareSpeakButton(speech)
+	}).catch(e => {
+		console.error("An error occured while initializing : ", e)
+	})
+	const text = (speech.hasBrowserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !"
+	document.getElementById("support").innerHTML = text
+}
 
-function _prepareSpeakButton() {
+function _prepareSpeakButton(speech) {
 	const speakButton = document.getElementById('play')
 	const textarea = document.getElementById('text')
 	const languages = document.getElementById('languages')
 	speakButton.addEventListener('click', () => {
-		speech.setLanguage(languages.value)
-    speech.setVoice(languages.options[languages.selectedIndex].dataset.name)
+		const language = languages.value
+		const voice = languages.options[languages.selectedIndex].dataset.name
+		if(language) speech.setLanguage(languages.value)
+    if(voice) speech.setVoice(voice)
 		speech.speak({
 			text: textarea.value,
-			onEnd: () => {
-				console.log('end of text')
-			}
+		}).then(() => {
+			console.log("Success !")
+		}).catch(e => {
+			console.error("An error occurred :", e)
 		})
 	})
 }
 
-
-
-
-const text = (speech.hasBrowserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !"
-document.getElementById("support").innerHTML = text
+_init()
