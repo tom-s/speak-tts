@@ -60,12 +60,13 @@ class SpeakTTS {
 
     return new Promise((resolve, reject) => {
       // If voices are already there, nothing to do
-      if(!isEmpty(speechSynthesis.getVoices())) {
+      const voices = speechSynthesis.getVoices()
+      if(!isEmpty(voices)) {
         return resolve(voices)
       }
 
       // Async loading of voices
-      if(typeof speechSynthesis.onvoiceschanged !== 'undefined') {
+      if(speechSynthesis.onvoiceschanged !== undefined) {
         speechSynthesis.onvoiceschanged = () => {
           return handlePromise(resolve, reject)
         }
