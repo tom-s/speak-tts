@@ -9,7 +9,7 @@ npm install speak-tts
 
 ## Description
 
-Speech synthesis (tts) for the browser with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by handling some quirks and bugs of IOS/android devices and some chrome versions. Also split sentences into several speeches to make it sound more natural and provides additional callback functions. Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
+Speech synthesis (tts) for the browser with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by providing a Promise-base API and handling some quirks and bugs of IOS/android devices and some chrome versions. It also split sentences into several speeches to make it sound more natural and provides additional callback functions. Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
 See browser support here : http://caniuse.com/#feat=speech-synthesis
 
 ## Demo
@@ -19,53 +19,63 @@ Here is a demo:
 
 ## Usage
 
-Import the component :
+Import the library :
 
 ```bash
 import Speech from 'speak-tts' // es6
 // var Speech = require('speak-tts') //if you use es5
 ```
 
-Start the component :
-
-```bash
-Speech.init()
 ```
-
-You can pass the following properties at init time:
-- onVoicesLoaded: callback function triggered when voices are loaded (happens asynchronously)
-- volume
-- rate
-- pitch
-- lang : if you don't pass a language, the language of the given text will be automatically detected thanks to franc (https://github.com/wooorm/franc). If you pass a language, this will be used for all audio outputs (nevertheless the language of the selected text)
-- voice : the voice to use. If you do not pass a voice, the first one available for `lang` will be used
-
-```bash
-// Example with full conf
-Speech.init({
-	'onVoicesLoaded': (data) => {console.log('voices', data.voices)},
-    'lang': 'en-US', // specify en-US language (no detection applied)
-    'volume': 0.5,
-    'rate': 0.8,
-    'pitch': 0.8,
-    'voice': 'Samantha'
-})
-```
-Check browser support :
+Check for browser support :
 
 ```javascript
-if(Speech.browserSupport()) {
+const speech = new Speech()
+if(speech.browserSupport()) {
 	console.log("speech synthesis supported")
 }
 ```
 
+Init the speech component :
+
+```bash
+const speech = new Speech()
+speech.init().then((data) => {
+	console.log("Speech is ready", data)
+}).catch(e => {
+	console.error("An error occured while initializing : ", e)
+})
+```
+
+You can pass the following properties at init time:
+- volume
+- lang
+- rate
+- pitch
+- voice : the voice to use
+- splitSentances
+
+```bash
+// Example with full conf
+Speech.init({
+    'volume': 0.5,
+		'lang': 'en-GB',
+		'rate': 1,
+		'pitch': 1,
+		'voice':'Google UK English Male',
+		'splitSentences': true
+})
+
+
 Read a text :
 
 ```javascript
-Speech.speak({
+speech.speak({
 	text: 'Hello, how are you today ?',
-	onError: (e) => {console.log('sorry an error occurred.', e)}, // optionnal error callback
-	onEnd: () => {console.log('your text has successfully been spoken.')} // optionnal onEnd callback
+}).then(() => {
+	console.log("Success !")
+}).catch(e => {
+	console.error("An error occurred :", e)
 })
 ```
 
@@ -73,7 +83,6 @@ Set language (note that the language must be supported by the client browser) :
 
 ```javascript
 Speech.setLanguage('en-US') // set language to US English
-Speech.setLanguage(null) // activate language auto-detection
 ```
 
 Set the voice (note that the voice must be supported by the client browser) :
