@@ -110,6 +110,12 @@ Set the volume :
 Speech.setVolume(1) 
 ```
 
+Set the pitch :
+
+```javascript
+Speech.setPitch(1) 
+```
+
 Stop talking in progress:
 
 ```javascript
