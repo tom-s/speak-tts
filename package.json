@@ -1,7 +1,7 @@
 {
   "name": "speak-tts",
-  "version": "2.0.3",
-  "description": "Browser TTS (using speechSynthesis API) made easy",
+  "version": "2.0.4",
+  "description": "Browser TTS (using Web speech API) made easy",
   "main": "lib/speak-tts.js",
   "scripts": {
     "start": "webpack-dev-server --devtool eval --progress --colors --content-base demo/build --hot --inline --mode development",
@@ -11,6 +11,7 @@
   },
   "author": "tom-s",
   "keywords": [
+    "web speech api",
     "speech synthesis",
     "speak",
     "speechSynthesis",
@@ -18,8 +19,7 @@
     "tts",
     "text to speech",
     "browser speech",
-    "browser tts",
-    "language detection"
+    "browser tts"
   ],
   "license": "ISC",
   "devDependencies": {
@@ -33,7 +33,6 @@
     "webpack-dev-server": "^3.1.9"
   },
   "dependencies": {
-    "babel-polyfill": "^6.26.0",
     "lodash": "^4.17.11"
   }
 }

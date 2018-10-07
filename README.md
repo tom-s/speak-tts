@@ -9,7 +9,7 @@ npm install speak-tts
 
 ## Description
 
-Speech synthesis (tts) for the browser. Based on browser SpeechSynthesis API, it improves it by :
+Speech synthesis (tts) for the browser. Based on browser Web speech API (https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API), it improves it by :
 - providing a Promise-base API (the init() and speak() methods respectively returns a Promise)
 - handling the fact that Chrome load voices in an asynchronous manner when others browsers don't
 - handling some quirks and bugs of IOS/android devices and some chrome/firefox versions 
