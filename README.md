@@ -9,13 +9,20 @@ npm install speak-tts
 
 ## Description
 
-Speech synthesis (tts) for the browser with (optional) language detection. Based on browser SpeechSynthesis API, it improves it by providing a Promise-base API and handling some quirks and bugs of IOS/android devices and some chrome versions. It also split sentences into several speeches to make it sound more natural and provides additional callback functions. Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
+Speech synthesis (tts) for the browser. Based on browser SpeechSynthesis API, it improves it by :
+- providing a Promise-base API (the init() and speak() methods respectively returns a Promise)
+- handling the fact that Chrome load voices in an asynchronous manner when others browsers don't
+- handling some quirks and bugs of IOS/android devices and some chrome versions 
+- splitting sentences into several speeches to make it sound more natural (can be disabled)
+- throwing specific exceptions: explicit exceptions will be thrown if you pass parameters with incompatible values to any of the methods 
+
+Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
 See browser support here : http://caniuse.com/#feat=speech-synthesis
 
 ## Demo
 
 Here is a demo:
-[Here](http://experiments.thomschell.com/speak-tts/demo/dist)
+[Here](https://codesandbox.io/s/w7m96rrp2l)
 
 ## Usage
 
@@ -26,12 +33,11 @@ import Speech from 'speak-tts' // es6
 // var Speech = require('speak-tts') //if you use es5
 ```
 
-```
 Check for browser support :
 
 ```javascript
-const speech = new Speech()
-if(speech.browserSupport()) {
+const speech = new Speech() // will throw an exception if not browser supported
+if(speech.browserSupport()) { // returns a boolean
 	console.log("speech synthesis supported")
 }
 ```
@@ -41,22 +47,23 @@ Init the speech component :
 ```javascript
 const speech = new Speech()
 speech.init().then((data) => {
-	console.log("Speech is ready", data)
+	// The "data" object contains the list of available voices and the voice synthesis params
+	console.log("Speech is ready, voices are available", data)
 }).catch(e => {
 	console.error("An error occured while initializing : ", e)
 })
 ```
 
-You can pass the following properties at init time:
-- volume
-- lang
-- rate
-- pitch
-- voice : the voice to use
-- splitSentances
+You can pass the following properties to the init function:
+- volume //default 1
+- lang // default is determined by your browser if not provided
+- voice : the voice to use // default is chosen by your browser if not provided
+- rate // default is determined by your browser if not provided (=1)
+- pitch //  default is chosen by your browser if not provided (=1)
+- splitSentences // default true
 
 ```javascript
-// Example with full conf
+// Example with full conf 
 Speech.init({
     'volume': 0.5,
 		'lang': 'en-GB',
@@ -82,22 +89,34 @@ speech.speak({
 Set language (note that the language must be supported by the client browser) :
 
 ```javascript
-Speech.setLanguage('en-US') // set language to US English
+Speech.setLanguage('en-US')
 ```
 
 Set the voice (note that the voice must be supported by the client browser) :
 
 ```javascript
-Speech.setVoice('Fiona') // set voice to 'Fiona'
+Speech.setVoice('Fiona')
 ```
 
-Stop talking:
+Set the rate :
+
+```javascript
+Speech.setRate(1) 
+```
+
+Set the volume :
+
+```javascript
+Speech.setVolume(1) 
+```
+
+Stop talking in progress:
 
 ```javascript
 Speech.stop()
 ```
 
-## Supported languages
+## Supported languages (list might not be up to date)
 ```
 ar-SA
 cs-CZ
@@ -142,7 +161,7 @@ zh-HK
 zh-TW
 ```
 
-## Supported Voices
+## Supported Voices (list might not be up to date)
 ```
 Alex
 Alice
@@ -210,55 +229,6 @@ Google русский
 Google 普通话（中国大陆）
 Google 粤語（香港）
 Google 國語（臺灣）
-```
-
-## Full demo code (es6 example)
-
-```javascript
-import Speech from 'speak-tts'
-
-const _addVoicesList = (voices) => {
-	const list = window.document.createElement('div')
-	let html = '<h2>Available Voices</h2><select id="languages"><option value="">autodetect language</option>'
-	voices.forEach((voice) => {
-		html += `<option value="${voice.lang}" data-name="${voice.name}">${voice.name} (${voice.lang})</option>`
-	})
-	list.innerHTML = html
-	window.document.body.appendChild(list)
-}
-
-function _prepareSpeakButton() {
-	const speakButton = document.getElementById('play')
-	const textarea = document.getElementById('text')
-	const languages = document.getElementById('languages')
-	speakButton.addEventListener('click', () => {
-		Speech.setLanguage(languages.value)
-        Speech.setVoice(languages.options[languages.selectedIndex].dataset.name)
-		Speech.speak({
-			text: textarea.value,
-			onEnd: () => {
-				console.log('end of text')
-			}
-		})
-	})
-}
-
-Speech.init({
-	onVoicesLoaded: (data) => {
-		console.log("loaded voices", data.voices)
-		_addVoicesList(data.voices)
-		_prepareSpeakButton()
-		Speech.speak({
-			text: 'Hello, how are you today ?',
-			onEnd: () => {
-				console.log('end of text')
-			},
-		})
-	}
-});
-
-const text = (Speech.browserSupport()) ? 'Hurray, your browser supports speech synthesis' : "Your browser does NOT support speech synthesis. Try using Chrome of Safari instead !"
-document.getElementById("support").innerHTML = text
 ```
 
 ## Tests
