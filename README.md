@@ -14,7 +14,7 @@ Speech synthesis (tts) for the browser. Wrapping the browser Speech Synthesis AP
 -> init() get resolved once voices are loaded
 -> speak() get resolved once the full text has been spoken
 - handling the fact that Chrome load voices in an asynchronous manner when others browsers don't
--> onvoicesloaded listener gets triggered in all browsers
+-> onvoiceschanged listener gets triggered in all browsers
 - handling some quirks and bugs of IOS/android devices and some chrome/firefox versions 
 - splitting sentences into several speeches to make it sound more natural, especially for older versions of Chrome (can be disabled)
 - throwing specific exceptions: explicit exceptions will be thrown if you pass parameters with incompatible values to any of the methods
