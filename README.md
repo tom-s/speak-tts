@@ -25,7 +25,7 @@ See browser support here : http://caniuse.com/#feat=speech-synthesis
 ## Demo
 
 Here is a demo:
-[Here](https://codesandbox.io/s/w7m96rrp2l)
+[Here](https://codesandbox.io/s/rmloxx60q4)
 
 ## Usage
 
@@ -136,7 +136,7 @@ Speech.setLanguage('en-US')
 Set the voice (note that the voice must be supported by the client browser) :
 
 ```javascript
-Speech.setVoice('Fiona')
+Speech.setVoice('Fiona') // you can pass a SpeechSynthesisVoice as returned by the init() function or just its name
 ```
 
 Set the rate :

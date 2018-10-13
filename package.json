@@ -1,6 +1,6 @@
 {
   "name": "speak-tts",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Browser TTS (using Web speech API) made easy",
   "main": "lib/speak-tts.js",
   "scripts": {
@@ -21,7 +21,7 @@
     "browser speech",
     "browser tts"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@babel/cli": "^7.1.2",
     "@babel/core": "^7.1.2",
