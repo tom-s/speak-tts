@@ -13,12 +13,13 @@ class SpeakTTS {
     this.browserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
     this.synthesisVoice = null
   }
+
   init(conf) {
     return new Promise((resolve, reject) => {
       if(!this.browserSupport) {
         reject('Your browser does not support Speech Synthesis')
       }
-      const onvoiceschanged = get(conf, 'onvoiceschanged')
+      const listeners = get(conf, 'listeners', {})
       const splitSentences = get(conf, 'splitSentences', true)
       const lang = get(conf, 'lang')
       const volume = get(conf, 'volume', 1)
@@ -26,10 +27,20 @@ class SpeakTTS {
       const pitch = get(conf, 'pitch', 1)
       const voice = get(conf, 'voice')
 
+      // Attach event listeners
+      toPairs(listeners).forEach(([listener, fn]) => {
+        const newListener = (data) => {
+          fn && fn(data)
+        }
+        if(listener !== 'onvoiceschanged') {
+          speechSynthesis[listener] = newListener
+        }
+      })
+
       this._loadVoices()
         .then(voices => {
-          // Call cb if provided
-          onvoiceschanged && onvoiceschanged(voices)
+          // Handle callback onvoiceschanged by hand
+          listeners['onvoiceschanged'] && listeners['onvoiceschanged'](voices)
 
           // Initialize values if necessary
           !isNil(lang) && this.setLanguage(lang)
@@ -139,13 +150,13 @@ class SpeakTTS {
 
   speak(data) {
     return new Promise((resolve, reject) => {
-      const { text, listeners = [] } = data
+      const { text, listeners = {}, queue = true } = data
       const msg = trim(text)
 
       if(isNil(msg)) resolve()
 
       // Stop current speech
-      this.cancel()
+      !queue && this.cancel()
 
       // Split into sentences (for better result and bug with some versions of chrome)
       const utterances = []

@@ -19,8 +19,10 @@ function _init() {
 		'pitch': 1,
 		//'voice':'Google UK English Male',
 		//'splitSentences': false,
-		'onvoiceschanged': (voices) => {
-			console.log("debug cb onvoiceschanged", voices)
+		'listeners': {
+			'onvoiceschanged': (voices) => {
+				console.log("Voices changed", voices)
+			}
 		}
 	}).then((data) => {
 		console.log("Speech is ready", data)
@@ -46,6 +48,7 @@ function _prepareSpeakButton(speech) {
     if(voice) speech.setVoice(voice)
 		speech.speak({
 			text: textarea.value,
+			queue: false,
 			listeners: {
 				onstart: () => {
 					console.log("Start utterance")
