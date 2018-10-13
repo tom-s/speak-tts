@@ -1,39 +1,54 @@
 import trim from 'lodash/trim'
 import size from 'lodash/size'
 import get from 'lodash/get'
+import toPairs from 'lodash/toPairs'
 import isNil from 'lodash/isNil'
-import isEmpty from 'lodash/isEmpty'
 import isObject from 'lodash/isObject'
 import isString from 'lodash/isString'
 import isFinite from 'lodash/isFinite'
 import { splitSentences, validateLocale } from './utils'
-import  { iOSversion, iOS8voices, iOS9voices } from './ios'
 
 class SpeakTTS {
   constructor() {
     this.browserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
     this.synthesisVoice = null
   }
+
   init(conf) {
     return new Promise((resolve, reject) => {
       if(!this.browserSupport) {
         reject('Your browser does not support Speech Synthesis')
       }
-      this.splitSentences = get(conf, 'splitSentences', true)
+      const listeners = get(conf, 'listeners', {})
+      const splitSentences = get(conf, 'splitSentences', true)
       const lang = get(conf, 'lang')
-      const volume = get(conf, 'volume')
-      const rate = get(conf, 'rate')
-      const pitch = get(conf, 'pitch')
+      const volume = get(conf, 'volume', 1)
+      const rate = get(conf, 'rate', 1)
+      const pitch = get(conf, 'pitch', 1)
       const voice = get(conf, 'voice')
+
+      // Attach event listeners
+      toPairs(listeners).forEach(([listener, fn]) => {
+        const newListener = (data) => {
+          fn && fn(data)
+        }
+        if(listener !== 'onvoiceschanged') {
+          speechSynthesis[listener] = newListener
+        }
+      })
 
       this._loadVoices()
         .then(voices => {
+          // Handle callback onvoiceschanged by hand
+          listeners['onvoiceschanged'] && listeners['onvoiceschanged'](voices)
+
           // Initialize values if necessary
-          lang && this.setLanguage(lang)
-          voice && this.setVoice(voice)
-          volume && this.setVolume(volume)
-          rate && this.setRate(rate)
-          pitch && this.setPitch(pitch)
+          !isNil(lang) && this.setLanguage(lang)
+          !isNil(voice) && this.setVoice(voice)
+          !isNil(volume) && this.setVolume(volume)
+          !isNil(rate) && this.setRate(rate)
+          !isNil(pitch) && this.setPitch(pitch)
+          !isNil(splitSentences) && this.setSplitSentences(splitSentences)
 
           resolve({
             voices,
@@ -42,61 +57,32 @@ class SpeakTTS {
             volume: this.volume,
             rate: this.rate,
             pitch: this.pitch,
+            splitSentences: this.splitSentences,
             browserSupport: this.browserSupport
           })
-        }).catch(reject)
+        }).catch(() => {
+          reject()
+        })
     })
   }
 
-  _loadVoices() {
-    const handlePromise = (resolve, reject) => {
-      const voices = speechSynthesis.getVoices()
-      if(isEmpty(voices)) {
-        reject()
-      } else {
-        resolve(voices)
-      }
-    }
-
-    return new Promise((resolve, reject) => {
-      // If voices are already there, nothing to do
-      const voices = speechSynthesis.getVoices()
-      if(!isEmpty(voices)) {
-        return resolve(voices)
-      }
-
-      // Async loading of voices
-      if(speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = () => {
-          return handlePromise(resolve, reject)
-        }
-      } else {
-        this._tryfallbackVoices()
-          .finally(() => {
-            return handlePromise(resolve, reject)
-          })
-      }
-    })
-  }
-
-  _tryfallbackVoices() {
-    // Try with a timeout
-    const iosVersion = iOSversion()
+  _fetchVoices() {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-         // Sometimes IOS has no voice (bug), so we try to use cached voices instead
-        if(isEmpty(speechSynthesis.getVoices())) {
-          if(iosVersion) {
-            delete speechSynthesis.getVoices
-            speechSynthesis.getVoices = () => version >= 9
-              ? iOS9voices
-              : iOS8voices
-            resolve()
-          } else {
-            reject()
-          }
+        const voices = speechSynthesis.getVoices()
+        if(size(voices) > 0) {
+          return resolve(voices)
+        } else {
+          return reject()
         }
       }, 100)
+    })
+  }
+
+  _loadVoices(remainingAttempts = 10) {
+    return this._fetchVoices().catch(error => {
+      if (remainingAttempts === 0) throw error
+      return this._loadVoices(remainingAttempts - 1)
     })
   }
 
@@ -123,6 +109,7 @@ class SpeakTTS {
   }
 
   setLanguage(lang) {
+    lang = lang.replace('_', '-') // some Android versions seem to ignore BCP 47 and use an underscore character in language tag
     if(validateLocale(lang)) {
       this.lang = lang
     } else {
@@ -157,17 +144,22 @@ class SpeakTTS {
     }
   }
 
+  setSplitSentences(splitSentences) {
+    this.splitSentences = splitSentences
+  }
+
   speak(data) {
     return new Promise((resolve, reject) => {
-      const { text } = data
+      const { text, listeners = {}, queue = true } = data
       const msg = trim(text)
 
       if(isNil(msg)) resolve()
 
       // Stop current speech
-      this.stop()
+      !queue && this.cancel()
 
       // Split into sentences (for better result and bug with some versions of chrome)
+      const utterances = []
       const sentences = this.splitSentences
         ? splitSentences(msg)
         : [msg]
@@ -180,16 +172,54 @@ class SpeakTTS {
         if(this.rate) utterance.rate = this.rate // 0.1 to 10
         if(this.pitch) utterance.pitch = this.pitch //0 to 2
         utterance.text = sentence
-        utterance.onerror = reject
-        utterance.onend = () => {
-          if(isLast) resolve()
-        }
+
+        // Attach event listeners
+        toPairs(listeners).forEach(([listener, fn]) => {
+          const newListener = (data) => {
+            fn && fn(data)
+            if(listener === 'onerror') {
+              reject({
+                utterances,
+                lastUtterance: utterance,
+                error: data
+              })
+            }
+            if(listener === 'onend') {
+              if(isLast) resolve({
+                utterances,
+                lastUtterance: utterance
+              })
+            }
+          }
+          utterance[listener] = newListener
+        })
+        utterances.push(utterance)
         speechSynthesis.speak(utterance)
       })
     })
   }
 
-  stop() {
+  pending() {
+    return speechSynthesis.pending
+  }
+
+  paused() {
+    return speechSynthesis.paused
+  }
+
+  speaking() {
+    return speechSynthesis.speaking
+  }
+
+  pause() {
+    speechSynthesis.pause()
+  }
+
+  resume() {
+    speechSynthesis.resume()
+  }
+
+  cancel() {
     speechSynthesis.cancel()
   }
 }

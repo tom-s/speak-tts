@@ -9,12 +9,15 @@ npm install speak-tts
 
 ## Description
 
-Speech synthesis (tts) for the browser. Based on browser Web speech API (https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API), it improves it by :
-- providing a Promise-base API (the init() and speak() methods respectively returns a Promise)
+Speech synthesis (tts) for the browser. Wrapping the browser Speech Synthesis API (https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesis) and providing a similar interface, it improves it by :
+- giving a Promise-base API (the init() and speak() methods respectively returns a Promise)
+-> init() get resolved once voices are loaded
+-> speak() get resolved once the full text has been spoken
 - handling the fact that Chrome load voices in an asynchronous manner when others browsers don't
+-> onvoicesloaded listener gets triggered in all browsers
 - handling some quirks and bugs of IOS/android devices and some chrome/firefox versions 
-- splitting sentences into several speeches to make it sound more natural (can be disabled)
-- throwing specific exceptions: explicit exceptions will be thrown if you pass parameters with incompatible values to any of the methods 
+- splitting sentences into several speeches to make it sound more natural, especially for older versions of Chrome (can be disabled)
+- throwing specific exceptions: explicit exceptions will be thrown if you pass parameters with incompatible values to any of the methods
 
 Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
 See browser support here : http://caniuse.com/#feat=speech-synthesis
@@ -58,19 +61,25 @@ You can pass the following properties to the init function:
 - volume //default 1
 - lang // default is determined by your browser if not provided
 - voice : the voice to use // default is chosen by your browser if not provided
-- rate // default is determined by your browser if not provided (=1)
-- pitch //  default is chosen by your browser if not provided (=1)
+- rate // default 1
+- pitch //  default 1
 - splitSentences // default true
+- listeners // object of listeners to attach to the SpeechSynthesis object
 
 ```javascript
 // Example with full conf 
 Speech.init({
-    'volume': 0.5,
+   	'volume': 1,
 		'lang': 'en-GB',
 		'rate': 1,
 		'pitch': 1,
 		'voice':'Google UK English Male',
-		'splitSentences': true
+		'splitSentences': true,
+		'listeners': {
+			'onvoiceschanged': (voices) => {
+				console.log("Event voiceschanged", voices)
+			}
+		}
 })
 ```
 
@@ -79,6 +88,38 @@ Read a text :
 ```javascript
 speech.speak({
 	text: 'Hello, how are you today ?',
+}).then(() => {
+	console.log("Success !")
+}).catch(e => {
+	console.error("An error occurred :", e)
+})
+```
+
+You can pass the following properties to the speak function:
+- text: text to be spoken
+- queue // default true: if set to false, the current speech utterance will be interrupted
+- listeners // object of listeners to attach to the SpeechSynthesisUtterance (see list on https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance)
+
+Read a text (example with all params):
+
+```javascript
+speech.speak({
+	text: 'Hello, how are you today ?',
+	queue: false // current speech will be interrupted,
+	listeners: {
+		onstart: () => {
+			console.log("Start utterance")
+		},
+		onend: () => {
+			console.log("End utterance")
+		},
+		onresume: () => {
+			console.log("Resume utterance")
+		},
+		onboundary: (event) => {
+			console.log(event.name + ' boundary reached after ' + event.elapsedTime + ' milliseconds.')
+		}
+	}
 }).then(() => {
 	console.log("Success !")
 }).catch(e => {
@@ -116,13 +157,43 @@ Set the pitch :
 Speech.setPitch(1) 
 ```
 
-Stop talking in progress:
+Pause talking in progress:
 
 ```javascript
-Speech.stop()
+Speech.pause()
 ```
 
-## Supported languages (list might not be up to date)
+Resume talking in progress:
+
+```javascript
+Speech.resume()
+```
+
+Cancel talking in progress:
+
+```javascript
+Speech.cancel()
+```
+
+Get boolean indicating if the utterance queue contains as-yet-unspoken utterances:
+
+```javascript
+Speech.pending()
+```
+
+Get boolean indicating if talking is paused:
+
+```javascript
+Speech.paused()
+```
+
+Get boolean indicating if talking is in progress:
+
+```javascript
+Speech.speaking()
+```
+
+## Supported languages (list may be incomplete and depends on your browser)
 ```
 ar-SA
 cs-CZ
@@ -165,76 +236,6 @@ tr-TR
 zh-CN
 zh-HK
 zh-TW
-```
-
-## Supported Voices (list might not be up to date)
-```
-Alex
-Alice
-Alva
-Amelie
-Anna
-Carmit
-Damayanti
-Daniel
-Diego
-Ellen
-Fiona
-Fred
-Ioana
-Joana
-Jorge
-Juan
-Kanya
-Karen
-Kyoko
-Laura
-Lekha
-Luca
-Luciana
-Maged
-Mariska
-Mei-Jia
-Melina
-Milena
-Moira
-Monica
-Nora
-Paulina
-Samantha
-Sara
-Satu
-Sin-ji
-Tessa
-Thomas
-Ting-Ting
-Veena
-Victoria
-Xander
-Yelda
-Yuna
-Yuri
-Zosia
-Zuzana
-Google Deutsch
-Google US English
-Google UK English Female
-Google UK English Male
-Google español
-Google español de Estados Unidos
-Google français
-Google हिन्दी
-Google Bahasa Indonesia
-Google italiano
-Google 日本語
-Google 한국의
-Google Nederlands
-Google polski
-Google português do Brasil
-Google русский
-Google 普通话（中国大陆）
-Google 粤語（香港）
-Google 國語（臺灣）
 ```
 
 ## Tests

@@ -18,7 +18,12 @@ function _init() {
 		'rate': 1,
 		'pitch': 1,
 		//'voice':'Google UK English Male',
-		//'splitSentences': false
+		//'splitSentences': false,
+		'listeners': {
+			'onvoiceschanged': (voices) => {
+				console.log("Voices changed", voices)
+			}
+		}
 	}).then((data) => {
 		console.log("Speech is ready", data)
 		_addVoicesList(data.voices)
@@ -32,6 +37,8 @@ function _init() {
 
 function _prepareSpeakButton(speech) {
 	const speakButton = document.getElementById('play')
+	const pauseButton = document.getElementById('pause')
+	const resumeButton = document.getElementById('resume')
 	const textarea = document.getElementById('text')
 	const languages = document.getElementById('languages')
 	speakButton.addEventListener('click', () => {
@@ -41,11 +48,34 @@ function _prepareSpeakButton(speech) {
     if(voice) speech.setVoice(voice)
 		speech.speak({
 			text: textarea.value,
-		}).then(() => {
-			console.log("Success !")
+			queue: false,
+			listeners: {
+				onstart: () => {
+					console.log("Start utterance")
+				},
+				onend: () => {
+					console.log("End utterance")
+				},
+				onresume: () => {
+					console.log("Resume utterance")
+				},
+				onboundary: (event) => {
+					console.log(event.name + ' boundary reached after ' + event.elapsedTime + ' milliseconds.')
+				}
+			}
+		}).then((data) => {
+			console.log("Success !", data)
 		}).catch(e => {
 			console.error("An error occurred :", e)
 		})
+	})
+
+	pauseButton.addEventListener('click', () => {
+		speech.pause()
+	})
+
+	resumeButton.addEventListener('click', () => {
+		speech.resume()
 	})
 }
 
