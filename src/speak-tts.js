@@ -66,7 +66,7 @@ class SpeakTTS {
         if(size(voices) > 0) {
           return resolve(voices)
         } else {
-          return reject()
+          return reject("Could not fetch voices")
         }
       }, 100)
     })
@@ -130,7 +130,6 @@ class SpeakTTS {
 
   setPitch(pitch) {
     pitch = parseFloat(pitch)
-    console.log("debug pitch", pitch)
     if(!isNan(pitch) && pitch >= 0 && pitch <= 2) {
       this.pitch = pitch
     } else {
@@ -166,8 +165,6 @@ class SpeakTTS {
         if(this.rate) utterance.rate = this.rate // 0.1 to 10
         if(this.pitch) utterance.pitch = this.pitch //0 to 2
         utterance.text = sentence
-
-        console.log("debug utterance",  this.volume, utterance)
 
         // Attach event listeners
         Object.keys(listeners).forEach(listener => {
