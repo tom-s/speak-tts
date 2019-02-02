@@ -1,12 +1,4 @@
-import trim from 'lodash/trim'
-import size from 'lodash/size'
-import get from 'lodash/get'
-import toPairs from 'lodash/toPairs'
-import isNil from 'lodash/isNil'
-import isObject from 'lodash/isObject'
-import isString from 'lodash/isString'
-import isFinite from 'lodash/isFinite'
-import { splitSentences, validateLocale } from './utils'
+import { splitSentences, validateLocale, isString, size, isNan, isNil, isObject, trim } from './utils'
 
 class SpeakTTS {
   constructor() {
@@ -14,21 +6,22 @@ class SpeakTTS {
     this.synthesisVoice = null
   }
 
-  init(conf) {
+  init(conf = {}) {
     return new Promise((resolve, reject) => {
       if(!this.browserSupport) {
         reject('Your browser does not support Speech Synthesis')
       }
-      const listeners = get(conf, 'listeners', {})
-      const splitSentences = get(conf, 'splitSentences', true)
-      const lang = get(conf, 'lang')
-      const volume = get(conf, 'volume', 1)
-      const rate = get(conf, 'rate', 1)
-      const pitch = get(conf, 'pitch', 1)
-      const voice = get(conf, 'voice')
+      const listeners = isNil(conf.listeners) ? {} : conf.listeners
+      const splitSentences = isNil(conf.splitSentences) ? true : conf.splitSentences
+      const lang = isNil(conf.lang) ? undefined : conf.lang
+      const volume = isNil(conf.volume) ? 1 : conf.volume
+      const rate = isNil(conf.rate) ? 1 : conf.rate
+      const pitch = isNil(conf.pitch) ? 1 : conf.pitch
+      const voice = isNil(conf.voice) ? undefined : conf.voice
 
       // Attach event listeners
-      toPairs(listeners).forEach(([listener, fn]) => {
+      Object.keys(listeners).forEach(listener => {
+        const fn = listeners[listener]
         const newListener = (data) => {
           fn && fn(data)
         }
@@ -60,8 +53,8 @@ class SpeakTTS {
             splitSentences: this.splitSentences,
             browserSupport: this.browserSupport
           })
-        }).catch(() => {
-          reject()
+        }).catch(e => {
+          reject(e)
         })
     })
   }
@@ -119,7 +112,7 @@ class SpeakTTS {
 
   setVolume(volume) {
     volume = parseFloat(volume)
-    if(isFinite(volume) && volume >= 0 && volume <= 1) {
+    if(!isNan(volume) && volume >= 0 && volume <= 1) {
       this.volume = volume
     } else {
       throw 'Error setting volume. Please verify your volume value is a number between 0 and 1.'
@@ -128,7 +121,7 @@ class SpeakTTS {
 
   setRate(rate) {
     rate = parseFloat(rate)
-    if(isFinite(rate) && rate >= 0 && rate <= 10) {
+    if(!isNan(rate) && rate >= 0 && rate <= 10) {
       this.rate = rate
     } else {
       throw 'Error setting rate. Please verify your volume value is a number between 0 and 10.'
@@ -137,7 +130,8 @@ class SpeakTTS {
 
   setPitch(pitch) {
     pitch = parseFloat(pitch)
-    if(isFinite(pitch) && pitch >= 0 && pitch <= 2) {
+    console.log("debug pitch", pitch)
+    if(!isNan(pitch) && pitch >= 0 && pitch <= 2) {
       this.pitch = pitch
     } else {
       throw 'Error setting pitch. Please verify your pitch value is a number between 0 and 2.'
@@ -173,8 +167,11 @@ class SpeakTTS {
         if(this.pitch) utterance.pitch = this.pitch //0 to 2
         utterance.text = sentence
 
+        console.log("debug utterance",  this.volume, utterance)
+
         // Attach event listeners
-        toPairs(listeners).forEach(([listener, fn]) => {
+        Object.keys(listeners).forEach(listener => {
+          const fn = listeners[listener]
           const newListener = (data) => {
             fn && fn(data)
             if(listener === 'onerror') {
