@@ -1,12 +1,5 @@
-import trim from 'lodash/trim'
-import size from 'lodash/size'
-import get from 'lodash/get'
-import toPairs from 'lodash/toPairs'
-import isNil from 'lodash/isNil'
-import isObject from 'lodash/isObject'
-import isString from 'lodash/isString'
-import isFinite from 'lodash/isFinite'
-import { splitSentences, validateLocale } from './utils'
+
+import { splitSentences, validateLocale, trim, get } from './utils'
 
 class SpeakTTS {
   constructor() {
@@ -28,7 +21,8 @@ class SpeakTTS {
       const voice = get(conf, 'voice')
 
       // Attach event listeners
-      toPairs(listeners).forEach(([listener, fn]) => {
+      Object.keys(listeners).forEach(listener => {
+        const fn = listeners[listener];
         const newListener = (data) => {
           fn && fn(data)
         }
@@ -43,12 +37,12 @@ class SpeakTTS {
           listeners['onvoiceschanged'] && listeners['onvoiceschanged'](voices)
 
           // Initialize values if necessary
-          !isNil(lang) && this.setLanguage(lang)
-          !isNil(voice) && this.setVoice(voice)
-          !isNil(volume) && this.setVolume(volume)
-          !isNil(rate) && this.setRate(rate)
-          !isNil(pitch) && this.setPitch(pitch)
-          !isNil(splitSentences) && this.setSplitSentences(splitSentences)
+          lang != null && this.setLanguage(lang)
+          voice != null && this.setVoice(voice)
+          volume != null && this.setVolume(volume)
+          rate != null && this.setRate(rate)
+          pitch != null && this.setPitch(pitch)
+          splitSentences != null && this.setSplitSentences(splitSentences)
 
           resolve({
             voices,
@@ -70,7 +64,7 @@ class SpeakTTS {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         const voices = speechSynthesis.getVoices()
-        if(size(voices) > 0) {
+        if(voices && voices.length > 0) {
           return resolve(voices)
         } else {
           return reject()
@@ -93,14 +87,13 @@ class SpeakTTS {
   setVoice(voice) {
     let synthesisVoice
     const voices = speechSynthesis.getVoices()
-    // set voice by name
-    if (isString(voice)) {
+
+    if (typeof voice === 'string') { // set voice by name
       synthesisVoice = voices.find((v) => v.name === voice)
-    }
-    // Set the voice in conf if found
-    if (isObject(voice)) {
+    } else if (typeof voice === 'object') { // Set the voice in conf if found
       synthesisVoice = voice
     }
+
     if(synthesisVoice) {
       this.synthesisVoice = synthesisVoice
     } else {
@@ -119,7 +112,7 @@ class SpeakTTS {
 
   setVolume(volume) {
     volume = parseFloat(volume)
-    if(isFinite(volume) && volume >= 0 && volume <= 1) {
+    if(typeof volume === 'number' && volume >= 0 && volume <= 1) {
       this.volume = volume
     } else {
       throw 'Error setting volume. Please verify your volume value is a number between 0 and 1.'
@@ -128,7 +121,7 @@ class SpeakTTS {
 
   setRate(rate) {
     rate = parseFloat(rate)
-    if(isFinite(rate) && rate >= 0 && rate <= 10) {
+    if(typeof rate === 'number' && rate >= 0 && rate <= 10) {
       this.rate = rate
     } else {
       throw 'Error setting rate. Please verify your volume value is a number between 0 and 10.'
@@ -137,7 +130,7 @@ class SpeakTTS {
 
   setPitch(pitch) {
     pitch = parseFloat(pitch)
-    if(isFinite(pitch) && pitch >= 0 && pitch <= 2) {
+    if(typeof pitch === 'number' && pitch >= 0 && pitch <= 2) {
       this.pitch = pitch
     } else {
       throw 'Error setting pitch. Please verify your pitch value is a number between 0 and 2.'
@@ -151,9 +144,9 @@ class SpeakTTS {
   speak(data) {
     return new Promise((resolve, reject) => {
       const { text, listeners = {}, queue = true } = data
-      const msg = trim(text)
+      const msg = trim(text);
 
-      if(isNil(msg)) resolve()
+      if(msg == null) resolve()
 
       // Stop current speech
       !queue && this.cancel()
@@ -164,7 +157,7 @@ class SpeakTTS {
         ? splitSentences(msg)
         : [msg]
       sentences.forEach((sentence, index) => {
-        const isLast = index === size(sentences) - 1
+        const isLast = index === sentences.length - 1
         const utterance = new SpeechSynthesisUtterance()
         if(this.synthesisVoice) utterance.voice = this.synthesisVoice
         if(this.lang) utterance.lang = this.lang
@@ -174,7 +167,8 @@ class SpeakTTS {
         utterance.text = sentence
 
         // Attach event listeners
-        toPairs(listeners).forEach(([listener, fn]) => {
+        Object.keys(listeners).forEach(listener => {
+          const fn = listeners[listener];
           const newListener = (data) => {
             fn && fn(data)
             if(listener === 'onerror') {
