@@ -1,6 +1,6 @@
 {
   "name": "speak-tts",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Browser TTS (using Web speech API) made easy",
   "main": "lib/speak-tts.js",
   "scripts": {
