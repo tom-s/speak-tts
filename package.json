@@ -10,6 +10,7 @@
     "prepublish": "npm run compile"
   },
   "author": "tom-s",
+  "homepage": "https://github.com/tom-s/speak-tts#readme",
   "keywords": [
     "web speech api",
     "speech synthesis",
