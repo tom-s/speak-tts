@@ -1,5 +1,7 @@
 import { splitSentences, validateLocale, isString, size, isNan, isNil, isObject, trim } from './utils'
 
+import  { iOSversion, filterIOSVoices } from './ios'
+
 class SpeakTTS {
   constructor() {
     this.browserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
@@ -32,6 +34,14 @@ class SpeakTTS {
 
       this._loadVoices()
         .then(voices => {
+          const iosVersion = iOSversion()
+
+          if (iosVersion) {
+            // iOS does not allow you to select all of the voices it claims 
+            // to have.  You only get one per locale.
+            voices = filterIOSVoices(voices)
+          }
+
           // Handle callback onvoiceschanged by hand
           listeners['onvoiceschanged'] && listeners['onvoiceschanged'](voices)
 
