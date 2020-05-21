@@ -188,8 +188,8 @@ class SpeakTTS {
         if(this.pitch) utterance.pitch = this.pitch //0 to 2
         utterance.text = sentence
 
-        // Attach event listeners
-        Object.keys(listeners).forEach(listener => {
+        // Attach event listeners, and make sure onerror and onend are included
+        Array.from(new Set(Object.keys(listeners).concat(['onerror', 'onend']))).forEach(listener => {
           const fn = listeners[listener]
           const newListener = (data) => {
             fn && fn(data)
