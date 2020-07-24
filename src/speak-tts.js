@@ -146,6 +146,12 @@ class SpeakTTS {
   }
 
   setSplitSentences(splitSentences) {
+    if (typeof splitSentences !== 'string' && Boolean(splitSentences)) {
+      splitSentences = '.?!'
+    }
+    if (splitSentences.match(/[a-zA-Z]/g)) {
+      throw 'splitSentences contains invalid characters [a-zA-Z]. Set to true or false, or specify custom punctuation characters to split sentences.'
+    }
     this.splitSentences = splitSentences
   }
 
@@ -162,7 +168,7 @@ class SpeakTTS {
       // Split into sentences (for better result and bug with some versions of chrome)
       const utterances = []
       const sentences = this.splitSentences
-        ? splitSentences(msg)
+        ? splitSentences(msg, this.splitSentences)
         : [msg]
       sentences.forEach((sentence, index) => {
         const isLast = index === size(sentences) - 1

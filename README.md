@@ -63,7 +63,7 @@ You can pass the following properties to the init function:
 - voice : the voice to use // default is chosen by your browser if not provided
 - rate // default 1
 - pitch //  default 1
-- splitSentences // default true
+- splitSentences // default true (or a string with custom sentence-deliminating characters: '.?!' is default)
 - listeners // object of listeners to attach to the SpeechSynthesis object
 
 ```javascript
