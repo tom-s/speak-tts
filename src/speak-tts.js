@@ -1,5 +1,7 @@
 import { splitSentences, validateLocale, isString, size, isNan, isNil, isObject, trim } from './utils'
 
+import  { isIos, filterIOSVoices } from './ios'
+
 class SpeakTTS {
   constructor() {
     this.browserSupport = ('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window)
@@ -32,6 +34,12 @@ class SpeakTTS {
 
       this._loadVoices()
         .then(voices => {
+          if (isIos()) {
+            // iOS does not allow you to select all of the voices it claims
+            // to have.  You only get one per locale.
+            voices = filterIOSVoices(voices)
+          }
+
           // Handle callback onvoiceschanged by hand
           listeners['onvoiceschanged'] && listeners['onvoiceschanged'](voices)
 
@@ -138,6 +146,12 @@ class SpeakTTS {
   }
 
   setSplitSentences(splitSentences) {
+    if (typeof splitSentences !== 'string' && Boolean(splitSentences)) {
+      splitSentences = '.?!'
+    }
+    if (splitSentences.match(/[a-zA-Z]/g)) {
+      throw 'splitSentences contains invalid characters [a-zA-Z]. Set to true or false, or specify custom punctuation characters to split sentences.'
+    }
     this.splitSentences = splitSentences
   }
 
@@ -154,7 +168,7 @@ class SpeakTTS {
       // Split into sentences (for better result and bug with some versions of chrome)
       const utterances = []
       const sentences = this.splitSentences
-        ? splitSentences(msg)
+        ? splitSentences(msg, this.splitSentences)
         : [msg]
       sentences.forEach((sentence, index) => {
         const isLast = index === size(sentences) - 1
@@ -166,8 +180,8 @@ class SpeakTTS {
         if(this.pitch) utterance.pitch = this.pitch //0 to 2
         utterance.text = sentence
 
-        // Attach event listeners
-        Object.keys(listeners).forEach(listener => {
+        // Attach specified event listeners, always including onerror and onend to resolve/reject the speak promise 
+        Array.from(new Set(Object.keys(listeners).concat(['onerror', 'onend']))).forEach(listener => {
           const fn = listeners[listener]
           const newListener = (data) => {
             fn && fn(data)
