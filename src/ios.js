@@ -1,10 +1,5 @@
-export const iOSversion = () => {
-  if (/(iPhone|iPad|iPod)/.test(navigator.platform)) {
-    const v = (navigator.appVersion).match(/OS (\d+)_(\d+)_?(\d+)?/)
-    return parseInt(v[1], 10)
-  }
-  return false
-}
+export const isIos = () => /(iPhone|iPad|iPod)/.test(navigator.platform)
+
 export const filterIOSVoices = (voices) => {
   let selectableVoices = [
     'Maged',
@@ -46,10 +41,5 @@ export const filterIOSVoices = (voices) => {
     'Sin-Ji',
     'Mei-Jia'
   ]
-  return voices.filter((v) => {
-    if(selectableVoices.includes(v.name)) {
-      return true
-    }
-    return false
-  })
+  return voices.filter(v => selectableVoices.includes(v.name))
 }

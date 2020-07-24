@@ -1,6 +1,6 @@
-import { splitSentences, splitPhrases, validateLocale, isString, size, isNan, isNil, isObject, trim } from './utils'
+import { splitSentences, validateLocale, isString, size, isNan, isNil, isObject, trim } from './utils'
 
-import  { iOSversion, filterIOSVoices } from './ios'
+import  { isIos, filterIOSVoices } from './ios'
 
 class SpeakTTS {
   constructor() {
@@ -15,7 +15,6 @@ class SpeakTTS {
       }
       const listeners = isNil(conf.listeners) ? {} : conf.listeners
       const splitSentences = isNil(conf.splitSentences) ? true : conf.splitSentences
-      const splitPhrases = isNil(conf.splitPhrases) ? true : conf.splitPhrases
       const lang = isNil(conf.lang) ? undefined : conf.lang
       const volume = isNil(conf.volume) ? 1 : conf.volume
       const rate = isNil(conf.rate) ? 1 : conf.rate
@@ -35,10 +34,8 @@ class SpeakTTS {
 
       this._loadVoices()
         .then(voices => {
-          const iosVersion = iOSversion()
-
-          if (iosVersion) {
-            // iOS does not allow you to select all of the voices it claims 
+          if (isIos()) {
+            // iOS does not allow you to select all of the voices it claims
             // to have.  You only get one per locale.
             voices = filterIOSVoices(voices)
           }
@@ -53,7 +50,6 @@ class SpeakTTS {
           !isNil(rate) && this.setRate(rate)
           !isNil(pitch) && this.setPitch(pitch)
           !isNil(splitSentences) && this.setSplitSentences(splitSentences)
-          !isNil(splitPhrases) && this.setSplitPhrases(splitPhrases)
 
           resolve({
             voices,
@@ -63,7 +59,6 @@ class SpeakTTS {
             rate: this.rate,
             pitch: this.pitch,
             splitSentences: this.splitSentences,
-            splitPhrases: this.splitPhrases,
             browserSupport: this.browserSupport
           })
         }).catch(e => {
@@ -154,10 +149,6 @@ class SpeakTTS {
     this.splitSentences = splitSentences
   }
 
-  setSplitPhrases(splitPhrases) {
-    this.splitPhrases = splitPhrases
-  }
-
   speak(data) {
     return new Promise((resolve, reject) => {
       const { text, listeners = {}, queue = true } = data
@@ -170,14 +161,9 @@ class SpeakTTS {
 
       // Split into sentences (for better result and bug with some versions of chrome)
       const utterances = []
-
-      // Always split by phrases if it is true.
-      // Only split by sentences if splitSentences == true && splitPhrases == false
-      const sentences = this.splitPhrases 
-        ? splitPhrases(msg) 
-        : this.splitSentences
-          ? splitSentences(msg)
-          : [msg]
+      const sentences = this.splitSentences
+        ? splitSentences(msg)
+        : [msg]
       sentences.forEach((sentence, index) => {
         const isLast = index === size(sentences) - 1
         const utterance = new SpeechSynthesisUtterance()
@@ -188,7 +174,7 @@ class SpeakTTS {
         if(this.pitch) utterance.pitch = this.pitch //0 to 2
         utterance.text = sentence
 
-        // Attach event listeners, and make sure onerror and onend are included
+        // Attach specified event listeners, always including onerror and onend to resolve/reject the speak promise 
         Array.from(new Set(Object.keys(listeners).concat(['onerror', 'onend']))).forEach(listener => {
           const fn = listeners[listener]
           const newListener = (data) => {
