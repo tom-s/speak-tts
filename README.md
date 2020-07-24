@@ -19,7 +19,7 @@ Speech synthesis (tts) for the browser. Wrapping the browser Speech Synthesis AP
 - splitting sentences into several speeches to make it sound more natural, especially for older versions of Chrome (can be disabled)
 - throwing specific exceptions: explicit exceptions will be thrown if you pass parameters with incompatible values to any of the methods
 
-Work in Chrome, opera and Safari (including ios8 and ios9 devices). Tested successfully on Ipad and Android.
+Work in Chrome, opera and Safari. Tested successfully on Ipad and Android.
 See browser support here : http://caniuse.com/#feat=speech-synthesis
 
 ## Demo
