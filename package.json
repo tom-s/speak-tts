@@ -3,6 +3,7 @@
   "version": "2.0.8",
   "description": "Browser TTS (using Web speech API) made easy",
   "main": "lib/speak-tts.js",
+  "types": "index.d.ts",
   "scripts": {
     "start": "webpack-dev-server --devtool eval --progress --colors --content-base demo/build --hot --inline --mode development",
     "deploy": "NODE_ENV=production webpack -p --config webpack.production.config.js --mode production",
