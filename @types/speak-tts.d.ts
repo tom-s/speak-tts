@@ -1,9 +1,9 @@
 declare class Speech {
-	constructor();
+  constructor();
 
-	hasBrowserSupport(): boolean;
+  hasBrowserSupport(): boolean;
 
-	init(options: {
+  init(options: {
     onVoicesLoaded?: (data: {
       voices: Array<SpeechSynthesisVoice>;
       synthesisParams: SpeechSynthesisUtterance;
@@ -18,111 +18,111 @@ declare class Speech {
       onvoiceschanged?: (voices: Array<SpeechSynthesisVoice>) => void;
     };
   }): Promise<{
-		voices: Array<SpeechSynthesisVoice>;
-		synthesisParams: SpeechSynthesisUtterance;
-	}>;
+    voices: Array<SpeechSynthesisVoice>;
+    synthesisParams: SpeechSynthesisUtterance;
+  }>;
 
-	pause(): void;
+  pause(): void;
 
-	resume(): void;
+  resume(): void;
 
-	cancel(): void;
+  cancel(): void;
 
-	pending(): boolean;
+  pending(): boolean;
 
-	paused(): boolean;
+  paused(): boolean;
 
-	speaking(): boolean;
+  speaking(): boolean;
 
-	setPitch(pitch: number): void;
+  setPitch(pitch: number): void;
 
-	setVoice(voice: string): void;
+  setVoice(voice: string): void;
 
-	setVolume(volume: number): void;
+  setVolume(volume: number): void;
 
-	setRate(rate: number): void;
+  setRate(rate: number): void;
 
-	setLanguage(lang: SupportedRegions): void;
+  setLanguage(lang: SupportedRegions): void;
 
-	speak(options: {
-		text: string;
-		queue?: boolean;
+  speak(options: {
+    text: string;
+    queue?: boolean;
     volume?: number;
     lang?: SupportedRegions;
     rate?: number;
     pitch?: number;
     voice?: string;
     splitSentences?: boolean;
-		listeners?: {
-			onstart?: () => void;
-			onend?: () => void;
-			onresume?: () => void;
-			onboundary?: (event: { name: string; elapsedTime: number }) => void;
-		};
-	}): Promise<void>;
+    listeners?: {
+      onstart?: () => void;
+      onend?: () => void;
+      onresume?: () => void;
+      onboundary?: (event: { name: string; elapsedTime: number }) => void;
+    };
+  }): Promise<void>;
 }
 
 declare interface SpeechSynthesisVoice {
-	default: boolean;
-	voiceURI: string;
-	name: string;
-	lang: string;
-	localService: boolean;
-	globalService: boolean;
+  default: boolean;
+  voiceURI: string;
+  name: string;
+  lang: string;
+  localService: boolean;
+  globalService: boolean;
 }
 
 declare interface SpeechSynthesisUtterance {
-	text: string;
-	lang: string;
-	voiceURI: string;
-	volume: number;
-	rate: number;
-	pitch: number;
+  text: string;
+  lang: string;
+  voiceURI: string;
+  volume: number;
+  rate: number;
+  pitch: number;
 }
 
 declare type SupportedRegions =
-	| 'ar-SA'
-	| 'cs-CZ'
-	| 'da-DK'
-	| 'de-DE'
-	| 'el-GR'
-	| 'en'
-	| 'en-AU'
-	| 'en-GB'
-	| 'en-IE'
-	| 'en-IN'
-	| 'en-US'
-	| 'en-ZA'
-	| 'es-AR'
-	| 'es-ES'
-	| 'es-MX'
-	| 'es-US'
-	| 'fi-FI'
-	| 'fr-CA'
-	| 'fr-FR'
-	| 'he-IL'
-	| 'hi-IN'
-	| 'hu-HU'
-	| 'id-ID'
-	| 'it-IT'
-	| 'ja-JP'
-	| 'ko-KR'
-	| 'nb-NO'
-	| 'nl-BE'
-	| 'nl-NL'
-	| 'pl-PL'
-	| 'pt-BR'
-	| 'pt-PT'
-	| 'ro-RO'
-	| 'ru-RU'
-	| 'sk-SK'
-	| 'sv-SE'
-	| 'th-TH'
-	| 'tr-TR'
-	| 'zh-CN'
-	| 'zh-HK'
-	| 'zh-TW';
+  | "ar-SA"
+  | "cs-CZ"
+  | "da-DK"
+  | "de-DE"
+  | "el-GR"
+  | "en"
+  | "en-AU"
+  | "en-GB"
+  | "en-IE"
+  | "en-IN"
+  | "en-US"
+  | "en-ZA"
+  | "es-AR"
+  | "es-ES"
+  | "es-MX"
+  | "es-US"
+  | "fi-FI"
+  | "fr-CA"
+  | "fr-FR"
+  | "he-IL"
+  | "hi-IN"
+  | "hu-HU"
+  | "id-ID"
+  | "it-IT"
+  | "ja-JP"
+  | "ko-KR"
+  | "nb-NO"
+  | "nl-BE"
+  | "nl-NL"
+  | "pl-PL"
+  | "pt-BR"
+  | "pt-PT"
+  | "ro-RO"
+  | "ru-RU"
+  | "sk-SK"
+  | "sv-SE"
+  | "th-TH"
+  | "tr-TR"
+  | "zh-CN"
+  | "zh-HK"
+  | "zh-TW";
 
-declare module 'speak-tts' {
-	export default Speech;
+declare module "speak-tts" {
+  export default Speech;
 }
